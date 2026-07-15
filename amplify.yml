@@ -1,0 +1,21 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm install --ignore-scripts
+    build:
+      commands:
+        - echo "API_SECRET_KEY=$API_SECRET_KEY" >> .env.production
+        - echo "BACKEND_API_BASE_URL=$BACKEND_API_BASE_URL" >> .env.production
+        - echo "NEXT_PUBLIC_ENCRYPTION_KEY=$NEXT_PUBLIC_ENCRYPTION_KEY" >> .env.production
+        - export BACKEND_API_BASE_URL=$BACKEND_API_BASE_URL
+        - npm run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - "**/*"
+  cache:
+    paths:
+      - .next/cache/**/*
+      - node_modules/**/*

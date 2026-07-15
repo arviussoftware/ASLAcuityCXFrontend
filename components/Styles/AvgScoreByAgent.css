@@ -1,0 +1,412 @@
+.reports-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  width: 100%;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.reports-container > .mt-5 {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.reports-title {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.report-content {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.reports-flex-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+
+.performance-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+  padding: 20px;
+}
+
+.top-performance,
+.bottom-performance {
+  width: 300px;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid #ddd;
+  background: #f9f9f9;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.top-performance {
+  border-color: #4CAF50;
+}
+
+.bottom-performance {
+  border-color: #FF6F61;
+}
+
+.badge {
+  position: absolute;
+  top: -15px;
+  right: 15px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: shimmer 2s infinite ease-in-out;
+}
+
+.top-badge {
+  background-color: #4CAF50;
+  /* Green for Top Performance */
+}
+
+.bottom-badge {
+  background-color: #FF6F61;
+  /* Red for Bottom Performance */
+}
+
+.performance-title {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.performance-name {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+
+.reports-table-container {
+  margin-top: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.reports-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reports-table th,
+.reports-table td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+  font-size: 0.8rem;
+}
+
+.reports-table th {
+  background-color: #f4f4f4;
+}
+
+.reports-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.loading-message,
+.no-data-message {
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  /* Stack items vertically */
+  align-items: flex-end;
+  /* Align cards to the right */
+  gap: 20px;
+  /* Space between the cards */
+  padding: 20px;
+  /* Optional padding for the container */
+}
+
+.performance-card {
+  flex: 0.5;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.performance-card h3 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.performance-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.top-performance,
+.bottom-performance {
+  width: 100%;
+  /* Full width of the parent container */
+  padding: 10px;
+  /* Adjusted padding */
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  /* Adjusted spacing */
+  border: 2px solid #ddd;
+  background: #f9f9f9;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.top-performance {
+  border-color: #4caf50;
+  /* Green border for Top Performance */
+}
+
+.bottom-performance {
+  border-color: #ff6f61;
+  /* Red border for Bottom Performance */
+}
+
+.badge {
+  position: absolute;
+  top: -12px;
+  right: 10px;
+  padding: 5px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  /* Smaller badge font size */
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.performance-title {
+  font-size: 16px;
+  /* Adjusted font size */
+  margin-bottom: 5px;
+}
+
+.performance-name {
+  font-size: 16px;
+  /* Adjusted font size */
+  font-weight: bold;
+  color: #333;
+}
+
+
+/* Shimmer animation for the badge */
+@keyframes shimmer {
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5),
+      0 0 10px rgba(255, 255, 255, 0.4),
+      0 0 20px rgba(255, 255, 255, 0.3);
+    transform: scale(1);
+  }
+
+  50% {
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.7),
+      0 0 15px rgba(255, 255, 255, 0.6),
+      0 0 30px rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+    /* Slightly increase size */
+  }
+}
+
+
+
+/* Filter Section Styles */
+
+
+
+.filter-performance-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.filter-section {
+  display: flex;
+  align-items: flex-start;
+  /* Align dropdown and custom range */
+  gap: 10px;
+  /* Add space between elements */
+  font-size: 12px;
+}
+
+.filter-caption {
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 10px;
+  display: block;
+  padding: 8px;
+}
+
+.filter-dropdown {
+  padding: 5px;
+  font-size: 12px;
+}
+
+.filter-dropdown-org {
+  margin-left: 10px;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.custom-date-range {
+  display: flex;
+  /* Ensures elements are aligned in a row */
+  align-items: center;
+  /* Vertically centers items */
+  gap: 10px;
+  /* Adds space between the caption and the date picker */
+  font-size: 12px;
+}
+
+.date-range-caption {
+  font-weight: bold;
+  font-size: 12px;
+  display: block;
+  margin-bottom: 0;
+  /* Remove extra space below the caption */
+}
+
+.date-range-picker {
+  display: flex;
+  gap: 10px;
+  /* Adjust gap between start and end date */
+  font-size: 12px;
+}
+
+.filter-section select {
+  padding: 8px;
+  font-size: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.custom-date-range label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.date-range-picker {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.filter-button {
+  padding: 8px 16px;
+  margin-left: 10px;
+  /* Add space between the date pickers and button */
+}
+
+.date-range-picker-org {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Adjust spacing between the date pickers */
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 8px;
+  font-size: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  outline: none;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.react-datepicker__input-container input:focus {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--in-range,
+.react-datepicker__day--range-start,
+.react-datepicker__day--range-end {
+  background-color: #c5f2d0 !important;
+  color: #333 !important;
+  border-radius: 0.3rem;
+}
+
+
+.react-datepicker__day:hover {
+  background-color: #b2e6bd !important;
+  color: #333 !important;
+}
+
+.react-datepicker__day--in-range {
+  background-color: #d9f7e4 !important;
+  color: #333 !important;
+}
+
+.graphdata {
+  gap: 10px;
+}
+
+.titleGraph {
+  text-align: center;
+}

@@ -1,0 +1,211 @@
+/* ── Reset ───────────────────────────────────────────────── */
+.form-tree-root,
+.form-tree-root *,
+.tree-children,
+.tree-children * {
+  list-style: none !important;
+  list-style-type: none !important;
+}
+
+/* ── Container ───────────────────────────────────────────── */
+.form-tree-container {
+  font-family: Inter, inherit;
+  padding: 8px 0 16px;
+  background-color: hsl(var(--card));
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+.form-tree-container::-webkit-scrollbar { width: 3px; }
+.form-tree-container::-webkit-scrollbar-track { background: transparent; }
+.form-tree-container::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+/* ── Root list ───────────────────────────────────────────── */
+.form-tree-root {
+  list-style: none !important;
+  padding: 6px 8px 16px 8px;
+  margin: 0;
+}
+
+/* ── Tree items ──────────────────────────────────────────── */
+.tree-item {
+  list-style: none !important;
+  margin: 0 0 3px 0;
+  padding: 0;
+  position: relative;
+}
+
+/* ── Children — indented with connector line ─────────────── */
+.tree-children {
+  list-style: none !important;
+  padding-left: 14px;
+  margin: 2px 0 0 10px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.22s ease;
+  position: relative;
+  border-left: 2px solid hsl(var(--border));
+}
+.tree-children-open { max-height: 4000px; }
+
+/* ── Base node ───────────────────────────────────────────── */
+.tree-node {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  font-family: Inter, inherit;
+  background: transparent;
+  border: none;
+  color: hsl(var(--foreground));
+  transition: background 0.12s, color 0.12s;
+  line-height: 1.4;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 30px;
+}
+
+/* ── Active ──────────────────────────────────────────────── */
+.tree-node-active {
+  background: hsl(var(--primary) / 0.1) !important;
+  color: var(--brand-primary) !important;
+}
+.tree-node-active .tree-arrow { color: var(--brand-primary) !important; }
+
+/* ── Arrow ───────────────────────────────────────────────── */
+.tree-arrow {
+  flex-shrink: 0;
+  font-size: 0.45rem;
+  color: hsl(var(--muted-foreground));
+  line-height: 1;
+  display: inline-block;
+  transition: color 0.12s;
+  width: 10px;
+  text-align: center;
+}
+
+/* ── Label ───────────────────────────────────────────────── */
+.tree-label {
+  word-break: break-word;
+  white-space: normal;
+  flex: 1;
+  line-height: 1.4;
+  text-align: left;
+  color: inherit;
+}
+
+/* ── Focus ───────────────────────────────────────────────── */
+.tree-node:focus-visible {
+  outline: 2px solid hsl(var(--primary) / 0.5);
+  outline-offset: 1px;
+}
+
+/* ══ LEVEL 0 — Form title ════════════════════════════════════
+   Bold pill with primary-tinted background                   */
+.tree-node-form {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: var(--brand-primary);
+  padding: 7px 10px;
+  background: hsl(var(--primary) / 0.08);
+  border-radius: 8px;
+  border-left: 3px solid var(--brand-primary);
+  margin-bottom: 4px;
+}
+.tree-node-form:hover:not(.tree-node-active) {
+  background: hsl(var(--primary) / 0.13);
+}
+.tree-node-form .tree-arrow { color: var(--brand-primary); }
+
+/* ══ LEVEL 1 — Header / Footer ═══════════════════════════════
+   Italic muted label, no arrow                               */
+.tree-node-header,
+.tree-node-footer {
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
+  padding: 4px 8px 4px 18px;
+}
+.tree-node-header:hover:not(.tree-node-active),
+.tree-node-footer:hover:not(.tree-node-active) {
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  font-style: normal;
+}
+
+/* ══ LEVEL 1 — Section ═══════════════════════════════════════
+   Semi-bold, slightly indented, accent left border on hover  */
+.tree-node-section {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  padding: 5px 8px;
+  border-radius: 7px;
+}
+.tree-node-section:hover:not(.tree-node-active) {
+  background: hsl(var(--muted));
+  color: var(--brand-primary);
+}
+.tree-node-section .tree-arrow { color: hsl(var(--primary) / 0.7); }
+
+/* ══ LEVEL 2 — Subsection ════════════════════════════════════
+   Medium weight, slightly smaller                            */
+.tree-node-subsection {
+  font-size: 0.71rem;
+  font-weight: 600;
+  color: hsl(var(--foreground) / 0.85);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.tree-node-subsection:hover:not(.tree-node-active) {
+  background: hsl(var(--muted));
+  color: var(--brand-primary);
+}
+.tree-node-subsection .tree-arrow { color: hsl(var(--muted-foreground)); }
+
+/* ══ LEVEL 3 — Question ══════════════════════════════════════
+   Small, muted, no arrow, dash prefix via padding            */
+.tree-node-question {
+  font-size: 0.67rem;
+  font-weight: 400;
+  color: hsl(var(--muted-foreground));
+  padding: 3px 8px 3px 20px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  line-height: 1.4;
+  text-align: left;
+  width: 100%;
+  background: transparent;
+  border: none;
+  box-sizing: border-box;
+  list-style: none !important;
+  position: relative;
+}
+/* dash before question */
+.tree-node-question::before {
+  content: '–';
+  position: absolute;
+  left: 8px;
+  color: hsl(var(--border));
+  font-size: 0.6rem;
+}
+.tree-node-question:hover:not(.tree-node-active) {
+  color: hsl(var(--foreground));
+  background: hsl(var(--muted));
+}

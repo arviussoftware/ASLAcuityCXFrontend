@@ -1,0 +1,70 @@
+.organization-container {
+  display: flex;
+  flex-direction: column;
+  height: 85vh; 
+  overflow: hidden; 
+  margin: 0;
+}
+.tree-wrapper {
+  flex: 1;
+  position: relative;
+  overflow: hidden; 
+}
+
+.tree-wrapper {
+  pointer-events: auto; /* Re-enable pointer events for the tree itself */
+  user-select: none; /* Prevent selection of elements */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align the tree to the top */
+}
+.add-child-form {
+  max-width: 600px;
+  width: auto;
+  margin: 0 auto;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.add-child-form .input-group {
+  margin-bottom: 15px;
+}
+
+.add-child-form label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.add-child-form input {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.add-child-form .button-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.add-child-form button {
+  font-size: 12px; 
+  padding: 8px 12px; 
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.add-child-form button:hover {
+  background-color: #45a049;
+}

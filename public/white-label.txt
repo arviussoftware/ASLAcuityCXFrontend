@@ -1,0 +1,68 @@
+# =============================================
+# WHITE LABEL CONFIG - AcuityCX
+# Edit here and refresh the browser.
+# =============================================
+
+# ---- App Identity ----
+APP_NAME=AcuityCx
+APP_TAGLINE=Excellence in Process
+
+# ---- Logo ----
+LOGO_URL=AcuityCx.png
+
+# ---- Theme ----
+# Primary/Brand (#0D2244) + Teal (#20b2aa) - light mode
+THEME=light
+THEME_MODE=light
+THEME_PRESET=default
+
+# ---- Brand Colors ----
+# Primary / Brand
+PRIMARY_COLOR=#ae275f
+
+# Accent / Gray
+SECONDARY_COLOR=#939598
+
+# =============================================
+# COLOR REFERENCE (do not edit - docs)
+# =============================================
+# Brand primary:     #1A3A6E
+# Primary navy:      #0e3a5c
+# Background start:  #0e3a5c
+# Background end:    #0e3a5c
+# Footer bg:         #1a3a6e
+# Navy mid:          #162e5a
+# Button hover:      #1e4580
+# Button hover end:  #0e3a5c
+# Focus glow:        rgba(32,178,170,0.12)
+# Teal accent:       #20b2aa
+# Grid dots:         rgba(32,178,170,0.15) / rgba(32,178,170,0.12)
+# Card bg:           #ffffff
+# Input bg:          #fafbfc
+# Tab group bg:      #f0f4f8
+# Modal footer:      #f8fafc
+# Info/SSO box:      #f0f9ff
+# Input border:      #d1d9e6
+# Divider line:      #e5eaf0
+# Info box border:   #b8e4ef
+# Support border:    #e2e8f0
+# Footer top border: rgba(255,255,255,0.07)
+# Footer separator:  #3a4a65
+# Input text:        #1a2744
+# Label text:        #374151
+# Modal body text:   #2d3748
+# Tab inactive:      #6b7a90
+# Placeholder/icon:  #a0aec0
+# Muted text:        #718096
+# Footer links:      #8a9ab8
+# Footer copyright:  #5a6b88
+# SSO info text:     #2d6a8a
+# SSO heading text:  #1a5276
+# Error bg:          #fff0f0
+# Error border:      #ffcdd2
+# Error text:        #c62828
+# Card bg alpha:     rgba(255,255,255,0.97)
+# Modal close btn:   rgba(255,255,255,0.15)
+# Card box shadow:   rgba(5,12,28,0.10)
+# Modal overlay:     rgba(5,12,28,0.75)
+# =============================================

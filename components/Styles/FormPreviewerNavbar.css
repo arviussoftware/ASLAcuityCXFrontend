@@ -1,0 +1,93 @@
+/* ── Form Previewer Navbar ───────────────────────────────── */
+.fnav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--brand-primary);
+  padding: 0 16px;
+  height: 48px;
+  gap: 8px;
+  flex-shrink: 0;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px hsl(var(--primary) / 0.3);
+  margin: 6px 6px 0;
+  box-sizing: border-box;
+}
+
+.fnav-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--primary-foreground));
+  white-space: nowrap;
+  font-family: var(--brand-font, Inter, sans-serif);
+  pointer-events: none;
+}
+
+.fnav-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* ── Base icon button — matches .fnav-builder-btn ────────── */
+.fnav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: hsl(var(--primary-foreground));
+  cursor: pointer;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+.fnav-btn:hover {
+  background: hsl(var(--primary-foreground) / 0.15);
+  opacity: 1;
+}
+
+.fnav-btn:active {
+  background: hsl(var(--primary-foreground) / 0.25);
+}
+
+/* ── Structure pill ──────────────────────────────────────── */
+.fnav-structure-btn {
+  width: auto;
+  padding: 0 10px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 11px;
+  font-weight: 600;
+  gap: 5px;
+}
+
+.fnav-structure-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Close button ────────────────────────────────────────── */
+.fnav-close-btn {
+  background: hsl(var(--primary-foreground) / 0.15);
+  color: hsl(var(--primary-foreground));
+}
+
+.fnav-close-btn:hover {
+  background: hsl(0 72% 51% / 0.25);
+  color: #fff;
+}
+
+/* ── Print hide ──────────────────────────────────────────── */
+@media print {
+  .fnav-bar {
+    display: none !important;
+  }
+}

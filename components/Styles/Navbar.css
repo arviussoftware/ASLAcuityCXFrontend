@@ -1,0 +1,211 @@
+/* ── Form Builder Navbar ─────────────────────────────────── */
+.fnav-builder-header,
+.main-header {
+  background-color: var(--brand-primary);
+  color: hsl(var(--primary-foreground));
+  padding: 0 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px hsl(var(--primary) / 0.3);
+  flex-shrink: 0;
+  margin: 6px 6px 0;
+}
+
+.fnav-builder-nav,
+.fnav-builder-nav,
+.fnav-builder-header .navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  gap: 8px;
+  padding: 0;
+  width: 100%;
+}
+
+/* Logo */
+.fnav-builder-logo,
+.logo a {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--primary-foreground));
+  text-decoration: none;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.15s;
+  pointer-events: none;
+  cursor: default;
+  font-family: var(--brand-font, Inter, sans-serif);
+}
+
+.fnav-builder-logo:hover,
+.logo a:hover {
+  opacity: 0.85;
+  text-decoration: none;
+}
+
+/* Action buttons container */
+.fnav-builder-actions,
+.navbuttons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px;
+}
+
+/* Individual icon buttons */
+.fnav-builder-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: hsl(var(--primary-foreground));
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  opacity: 0.9;
+}
+
+.fnav-builder-btn:hover {
+  background: hsl(var(--primary-foreground) / 0.15);
+  opacity: 1;
+}
+
+/* Structure toggle — pill with bold label */
+.fnav-builder-btn.fnav-structure-btn {
+  width: auto;
+  padding: 0 10px;
+  gap: 5px;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.fnav-structure-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: hsl(var(--primary-foreground));
+  font-family: var(--brand-font, Inter, sans-serif);
+}
+
+/* Legacy icon classes — keep theme-aware */
+.addbutton-image,
+.draftbutton-image,
+.submitbutton-image,
+.goback-image,
+.header-icon,
+.footer-icon,
+.preview-icon {
+  color: hsl(var(--primary-foreground));
+  cursor: pointer;
+}
+
+.addbutton-image  { font-size: 28px; margin: 0 8px; }
+.draftbutton-image,
+.submitbutton-image,
+.header-icon,
+.footer-icon,
+.goback-image     { font-size: 26px; margin: 0 8px; }
+.preview-icon     { width: 28px; height: 28px; margin: 0 6px; }
+
+.special {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Tooltips */
+.tooltip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tooltip-text,
+.add-section-tooltip {
+  visibility: hidden;
+  width: 90px;
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  text-align: center;
+  border-radius: 5px;
+  padding: 4px 0;
+  position: absolute;
+  z-index: 50;
+  bottom: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border: 1px solid hsl(var(--border));
+  pointer-events: none;
+}
+
+.tooltip-text::after,
+.add-section-tooltip::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent hsl(var(--popover)) transparent;
+}
+
+.tooltip-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.fnav-builder-label { display: none; }
+
+/* ── Nav links (legacy) ──────────────────────────────────── */
+.nav-links {
+  list-style: none;
+  display: flex;
+}
+
+.nav-links li { padding: 0 15px; }
+
+.nav-links a {
+  color: hsl(var(--primary-foreground));
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.nav-links a:hover { opacity: 0.8; }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 1060px) and (min-width: 850px) {
+  .addbutton-image  { font-size: 26px; }
+  .draftbutton-image, .submitbutton-image { font-size: 24px; }
+  .preview-icon { width: 26px; height: 26px; }
+}
+
+@media (max-width: 768px) and (min-width: 640px) {
+  .addbutton-image  { font-size: 24px; }
+  .draftbutton-image, .submitbutton-image { font-size: 22px; }
+  .preview-icon { width: 24px; height: 24px; }
+}
+
+@media (max-width: 640px) and (min-width: 425px) {
+  .navbuttons {
+    width: 70vw;
+    justify-content: flex-end;
+  }
+  .addbutton-image  { font-size: 22px; }
+  .draftbutton-image, .submitbutton-image { font-size: 20px; }
+  .preview-icon { width: 22px; height: 22px; }
+  .logo a, .fnav-builder-logo { font-size: 11px; }
+}

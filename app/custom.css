@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+}
+.flex {
+  display: flex;
+}
+.min-h-screen {
+  min-height: 100vh;
+}
+.w-full {
+  width: 100%;
+}
+.svc-creator__banner {
+  display: none;
+}

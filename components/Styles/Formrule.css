@@ -1,0 +1,501 @@
+* {
+  box-sizing: border-box;
+}
+
+/* ── Form Rule Container ─────────────────────────────────── */
+.form-rule {
+  width: 100%;
+  height: calc(100% - 44px); /* subtract navbar height */
+  padding: 8px;
+  background-color: hsl(var(--card));
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.4) transparent;
+  font-family: inherit;
+}
+
+.form-rule::-webkit-scrollbar { width: 4px; }
+.form-rule::-webkit-scrollbar-track { background: transparent; }
+.form-rule::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.4);
+  border-radius: 4px;
+}
+.form-rule::-webkit-scrollbar-thumb:hover { background: hsl(var(--primary) / 0.6); }
+
+/* ── Rule type sticky header ─────────────────────────────── */
+.rule-type-selection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  background-color: hsl(var(--card));
+  border-radius: 8px;
+  border: 1px solid hsl(var(--border));
+  font-size: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-family: inherit;
+  box-shadow: 0 2px 4px hsl(var(--foreground) / 0.06);
+  color: hsl(var(--foreground));
+}
+
+.rule-type-selection label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  white-space: nowrap;
+  color: hsl(var(--foreground));
+  font-size: 12px;
+}
+
+.rule-type-selection input[type="radio"] {
+  margin-right: 5px;
+  margin-left: 10px;
+  accent-color: var(--brand-primary);
+  cursor: pointer;
+}
+
+/* ── Rule cards ──────────────────────────────────────────── */
+.form-content,
+.form-content-scoring {
+  margin-bottom: 10px;
+  padding: 8px;
+  background-color: hsl(var(--background));
+  border-radius: 8px;
+  border: 1px solid hsl(var(--border));
+  position: relative;
+  font-family: inherit;
+}
+
+/* ── Remove button ───────────────────────────────────────── */
+.remove-button {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  color: hsl(var(--destructive));
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.remove-button:hover {
+  background-color: hsl(var(--destructive) / 0.1);
+}
+
+.remove-button i { font-size: 12px; }
+
+/* ── Form rows ───────────────────────────────────────────── */
+.form-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 4px;
+  margin: 1px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.form-row-scoring {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 2px;
+  margin: 1px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── Dropdowns ───────────────────────────────────────────── */
+.collapsible-box,
+.collapsible-box-scoring,
+.question-options-dropdown,
+.question-options-dropdown-scoring,
+.dropdown-container,
+.dropdown-container-scoring,
+.then-dropdown-scoring {
+  flex: 1;
+}
+
+.question-options-dropdown,
+.question-options-dropdown-scoring {
+  max-width: 130px;
+}
+
+.dropdown-container,
+.dropdown-container-scoring {
+  max-width: 90px;
+}
+
+select,
+.form-rule-tree-dropdown {
+  width: 100%;
+  padding: 5px 6px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  transition: border-color 0.15s;
+}
+
+select:focus,
+.form-rule-tree-dropdown:focus {
+  outline: none;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.15);
+}
+
+.form-rule-tree-dropdown {
+  overflow-x: hidden;
+  white-space: nowrap;
+}
+
+.form-rule-tree-dropdown option {
+  max-width: 200px;
+  text-overflow: ellipsis;
+  display: block;
+  word-wrap: break-word;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+select:disabled {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.tree-dropdown {
+  margin-left: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* ── Dots container ──────────────────────────────────────── */
+.dots-container {
+  width: 150px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  text-align: center;
+  padding: 0 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  font-family: inherit;
+  color: hsl(var(--foreground));
+  transition: background 0.15s;
+}
+
+.dots-container:hover {
+  background-color: hsl(var(--muted) / 0.7);
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
+.form-rule-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 4px;
+}
+
+/* ── Container wrapper ───────────────────────────────────── */
+.container-wrapper {
+  display: flex;
+  gap: 1%;
+  align-items: flex-start;
+}
+
+.div-container-calculator-wrapper {
+  flex: 1;
+  padding-left: 0;
+}
+
+/* ── Calculation container ───────────────────────────────── */
+.calculation-container {
+  flex: 7;
+  padding-top: 0;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* .calculation-container .form-group {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  margin-bottom: 5px;
+  margin-top: 4px;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+} */
+/* Outer row container — equal spacing between all field groups */.calculation-container .form-group {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* ✅ reduced from 24px */
+  margin-bottom: 5px;
+  margin-top: 4px;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+/* Each label+input/select pair inside */
+.calculation-container .form-group .form-group {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* ✅ reduced from 8px */
+  flex: 0 0 auto; /* ✅ don't grow/shrink, use only needed space */
+  margin: 0;
+  min-width: 0;
+}
+
+/* Labels don't shrink */
+.calculation-container .form-group .form-group label {
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+/* Inputs and selects fill their slot equally */
+.calculation-container .form-group .form-group select,
+.calculation-container .form-group .form-group input {
+  flex: 1;
+  min-width: 0;
+}
+
+.calculation-container select {
+  padding: 4px 6px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  width: auto; /* ✅ only as wide as needed */
+}
+
+.calculation-container input {
+  padding: 4px 6px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  width: 70px; /* ✅ fixed small width for Passing Score & Base Percentage */
+}
+
+/* Scoring Method select specifically — needs more width */
+#scoring-method-dropdown {
+  width: 180px; /* ✅ controlled width */
+    width: auto;
+}
+/* .calculation-container .form-group select { width: 50%; }
+.calculation-container .form-group input.form-group { width: 30%; } */
+
+/* ── Labels ──────────────────────────────────────────────── */
+.base-precent-label {
+  position: relative;
+  top: 0.7vh;
+  font-size: 12px;
+  font-family: inherit;
+  color: hsl(var(--foreground));
+}
+
+.then-label,
+.then-label-scoring,
+.to-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.button-form-rule {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  justify-content: flex-end;
+}
+
+.add-button,
+.edit-button,
+.submit-button {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background-color 0.15s ease;
+  font-family: inherit;
+  background-color: var(--brand-primary);
+  color: hsl(var(--primary-foreground));
+  white-space: nowrap;
+}
+
+.add-button:hover,
+.edit-button:hover,
+.submit-button:hover {
+  background-color: hsl(var(--primary) / 0.85);
+}
+
+.add-button i {
+  font-size: 11px;
+  color: hsl(var(--primary-foreground));
+}
+
+/* ── Checkbox options ────────────────────────────────────── */
+.checkbox-option,
+.checkbox-option-scoring {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  gap: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  color: hsl(var(--foreground));
+  border-radius: 4px;
+  transition: background 0.12s;
+}
+
+.checkbox-option input,
+.checkbox-option-scoring input {
+  margin-right: 8px;
+  accent-color: var(--brand-primary);
+  cursor: pointer;
+}
+
+.checkbox-option label,
+.checkbox-option-scoring label {
+  margin: 0;
+  user-select: none;
+  color: hsl(var(--foreground));
+}
+
+.checkbox-option:hover,
+.checkbox-option-scoring:hover {
+  background-color: hsl(var(--muted));
+  border-radius: 4px;
+}
+
+/* ── Custom dropdown ─────────────────────────────────────── */
+.custom-dropdown,
+.custom-dropdown-scoring {
+  position: relative;
+  display: inline-block;
+  max-width: 150px;
+}
+
+.dropdown-toggle,
+.dropdown-toggle-scoring {
+  background-color: var(--brand-primary);
+  color: hsl(var(--primary-foreground));
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+  font-family: inherit;
+}
+
+.dropdown-toggle:hover,
+.dropdown-toggle-scoring:hover {
+  background-color: hsl(var(--primary) / 0.85);
+}
+
+.dropdown-menu,
+.dropdown-menu-scoring {
+  display: none;
+  position: absolute;
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  box-shadow: 0 4px 12px hsl(var(--foreground) / 0.12);
+  z-index: 1000;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.custom-dropdown:hover .dropdown-menu,
+.custom-dropdown-scoring:hover .dropdown-menu-scoring {
+  display: block;
+}
+
+/* ── Scoring rules content ───────────────────────────────── */
+.scoring-rules-content {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+/* ── Then value input ────────────────────────────────────── */
+.then-value-input-scoring {
+  padding: 5px 8px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  width: 100px;
+  font-size: 12px;
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+.then-value-input-scoring::placeholder {
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+.then-value-input-scoring:focus {
+  border-color: var(--brand-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.15);
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 1060px) and (min-width: 850px) {
+  .form-rule { overflow-x: hidden; }
+  .form-content, .form-content-scoring { margin-bottom: 8px; padding: 6px; }
+  .form-row, .form-row-scoring { gap: 3px; padding: 4px; }
+  .rule-type-selection { gap: 3px; padding: 6px; font-size: 11px; }
+  .rule-type-selection input[type="radio"] { margin-right: 3px; margin-left: 6px; }
+  .add-button, .edit-button, .submit-button { padding: 4px 8px; font-size: 11px; }
+  select, .form-rule-tree-dropdown { padding: 4px; font-size: 11px; }
+}
+
+@media (max-width: 849px) {
+  .form-rule { overflow-x: hidden; }
+  .form-content, .form-content-scoring { margin-bottom: 8px; padding: 6px; }
+  .form-row, .form-row-scoring { gap: 3px; padding: 4px; flex-wrap: wrap; }
+  .rule-type-selection { gap: 3px; padding: 6px; font-size: 11px; }
+  select, .form-rule-tree-dropdown { padding: 4px; font-size: 11px; }
+}

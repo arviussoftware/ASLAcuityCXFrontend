@@ -1,0 +1,10 @@
+.containertx {
+  width: 100%;
+  margin: 0 auto; 
+  padding: 20px;
+  overflow-x: hidden; 
+}
+.table-auto {
+  width: 100%;
+  table-layout: auto; 
+}

@@ -1,0 +1,28 @@
+.form-tree ul {
+    list-style-type: none; /* Remove default bullet points */
+    padding-left: 20px; /* Add indentation for nested elements */
+  }
+  
+  .form-tree li {
+    cursor: pointer; /* Pointer cursor to show clickable items */
+    padding: 5px;
+  }
+  
+  .form-tree li span {
+    padding-left: 10px;
+    font-weight: normal;
+  }
+  
+  .form-tree li.focused {
+    background-color: #f0f0f0; /* Highlight the focused item */
+    font-weight: bold; /* Make focused item text bold */
+  }
+  
+  .form-tree li ul {
+    padding-left: 20px; /* Indent nested lists */
+  }
+  
+  .form-tree h3 {
+    margin-bottom: 10px;
+  }
+  
