@@ -9,6 +9,12 @@ frontend:
         - echo "API_SECRET_KEY=$API_SECRET_KEY" >> .env.production
         - echo "BACKEND_API_BASE_URL=$BACKEND_API_BASE_URL" >> .env.production
         - echo "NEXT_PUBLIC_ENCRYPTION_KEY=$NEXT_PUBLIC_ENCRYPTION_KEY" >> .env.production
+        - echo "SAML_ISSUER=$SAML_ISSUER" >> .env.production
+        - echo "SAML_CALLBACK_URL=$SAML_CALLBACK_URL" >> .env.production
+        - echo "SAML_ENTRY_POINT=$SAML_ENTRY_POINT" >> .env.production
+        - echo "SAML_LOGOUT_URL=$SAML_LOGOUT_URL" >> .env.production
+        - echo "SAML_IDP_ISSUER=$SAML_IDP_ISSUER" >> .env.production
+        - echo "SAML_CERT=$SAML_CERT" >> .env.production
         - export BACKEND_API_BASE_URL=$BACKEND_API_BASE_URL
         - npm run build
   artifacts:
