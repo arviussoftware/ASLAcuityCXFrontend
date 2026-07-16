@@ -143,7 +143,9 @@
   "overrides": {
     "postcss": "$postcss",
     "uuid": "^11.1.1",
-    "form-data": "^4.0.6"
+    "form-data": "^4.0.6",
+    "glob": "^10.4.7",
+    "quill": "^2.0.0"
   },
   "description": "First, run the development server:",
   "main": "middleware.js",

@@ -3,12 +3,19 @@ frontend:
   phases:
     preBuild:
       commands:
+        - rm -rf .next
+        - export NODE_OPTIONS="--max-old-space-size=8192"
         - npm ci --legacy-peer-deps
     build:
       commands:
         - echo "API_SECRET_KEY=$API_SECRET_KEY" >> .env.production
         - echo "BACKEND_API_BASE_URL=$BACKEND_API_BASE_URL" >> .env.production
         - echo "NEXT_PUBLIC_ENCRYPTION_KEY=$NEXT_PUBLIC_ENCRYPTION_KEY" >> .env.production
+        - echo "NEXT_PUBLIC_API_TOKEN=$NEXT_PUBLIC_API_TOKEN" >> .env.production
+        - echo "NEXT_PUBLIC_CLIENT_ENCRYPT_KEY=$NEXT_PUBLIC_CLIENT_ENCRYPT_KEY" >> .env.production
+        - echo "NEXT_PUBLIC_AZURE_CLIENT_ID=$NEXT_PUBLIC_AZURE_CLIENT_ID" >> .env.production
+        - echo "NEXT_PUBLIC_AZURE_TENANT_ID=$NEXT_PUBLIC_AZURE_TENANT_ID" >> .env.production
+        - echo "NEXT_PUBLIC_MAX_EXPORT_LIMIT=$NEXT_PUBLIC_MAX_EXPORT_LIMIT" >> .env.production
         - echo "SAML_ISSUER=$SAML_ISSUER" >> .env.production
         - echo "SAML_CALLBACK_URL=$SAML_CALLBACK_URL" >> .env.production
         - echo "SAML_ENTRY_POINT=$SAML_ENTRY_POINT" >> .env.production
@@ -17,6 +24,7 @@ frontend:
         - echo "SAML_CERT=$SAML_CERT" >> .env.production
         - export BACKEND_API_BASE_URL=$BACKEND_API_BASE_URL
         - npm run build
+        - rm -rf .next/cache
   artifacts:
     baseDirectory: .next
     files:

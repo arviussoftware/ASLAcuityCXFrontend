@@ -30,6 +30,7 @@ const nextConfig = {
   productionBrowserSourceMaps: true,
   poweredByHeader: false,
   experimental: {
+    // bodySizeLimit allows large file uploads via Server Actions (100 MB max)
     serverActions: { bodySizeLimit: "100mb" },
   },
 

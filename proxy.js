@@ -77,7 +77,7 @@ function applySecurityHeaders(response) {
   return response;
 }
 
-export async function middleware(req) {
+export async function proxy(req) {
   const { pathname } = req.nextUrl;
   
   // Prevent infinite rewrite loops when frontend is run on the backend's port (3000)
