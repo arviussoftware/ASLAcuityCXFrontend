@@ -1,0 +1,65 @@
+name: Sync Azure Frontend to GitHub Main
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout GitHub frontend repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GH_PAT }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+
+      - name: Add Azure repository
+        run: |
+          git remote remove azure 2>/dev/null || true
+          git remote add azure "https://anything:${{ secrets.AZURE_PAT }}@dev.azure.com/techdot/ASLAcuityCXAPI/_git/ASLAcuityCXAPI"
+
+      - name: Fetch Azure main branch
+        run: |
+          git fetch azure main
+
+      - name: Remove old frontend files
+        run: |
+          find . -mindepth 1 \
+            ! -path "./.git" \
+            ! -path "./.git/*" \
+            ! -path "./.github" \
+            ! -path "./.github/*" \
+            -exec rm -rf {} +
+
+      - name: Copy qm-frontend folder from Azure
+        run: |
+          git checkout azure/main -- qm-frontend
+
+          cp -a qm-frontend/. .
+
+          rm -rf qm-frontend
+
+      - name: Commit frontend changes
+        run: |
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No frontend changes found"
+          else
+            git commit -m "Sync frontend from Azure main"
+          fi
+
+      - name: Push frontend to GitHub main
+        run: |
+          git remote set-url origin "https://x-access-token:${{ secrets.GH_PAT }}@github.com/arviussoftware/ASLAcuityCXFrontend.git"
+          git push origin main
