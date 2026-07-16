@@ -92,7 +92,7 @@
     "nodemailer": "^9.0.3",
     "path": "^0.12.7",
     "pdf-lib": "^1.17.1",
-    "postcss": "^8.5.4",
+    "postcss": "^8.5.10",
     "print-js": "^1.6.0",
     "process": "^0.11.10",
     "raw-body": "^3.0.0",
@@ -124,7 +124,7 @@
     "use-debounce": "9.0.4",
     "vaul": "^0.9.1",
     "wavesurfer.js": "^7.7.15",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zod": "^3.23.8",
     "zustand": "^4.5.2"
   },
@@ -139,6 +139,11 @@
     "eslint-plugin-react": "^7.35.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.5.4"
+  },
+  "overrides": {
+    "postcss": "$postcss",
+    "uuid": "^11.1.1",
+    "form-data": "^4.0.6"
   },
   "description": "First, run the development server:",
   "main": "middleware.js",
