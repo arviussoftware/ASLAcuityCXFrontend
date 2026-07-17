@@ -18,7 +18,7 @@ const cspHeader = [
   "img-src 'self' blob: data: https://images.pexels.com https://commondatastorage.googleapis.com https://storage.googleapis.com https://*.s3.amazonaws.com https://*.amazonaws.com",
   "font-src 'self' data: https://fonts.gstatic.com",
   "media-src 'self' blob: data: https://*.s3.amazonaws.com https://*.amazonaws.com https://storage.googleapis.com",
-  `connect-src 'self' ws: wss: ${backendOrigin}`,
+  `connect-src 'self'${isProd ? "" : " ws: wss:"} ${backendOrigin}`,
   "worker-src 'self' blob:",
   "frame-ancestors 'self'",
   "base-uri 'self'",
@@ -50,10 +50,7 @@ const nextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-XSS-Protection", value: "1; mode=block" },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=31536000; includeSubDomains; preload",
-          },
+
           { key: "Content-Security-Policy", value: cspHeader },
           { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
           { key: "X-DNS-Prefetch-Control", value: "on" },

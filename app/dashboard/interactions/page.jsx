@@ -377,24 +377,27 @@ const buildDynamicInteractionColumns = (rows = []) => {
         const effectiveStatus = isS3
           ? restoreState || "loading"
           : "retrieved";
-        const canPlay = isAvailable && effectiveStatus === "retrieved";
+        const statusVal = String(effectiveStatus || "").trim().toLowerCase();
+        const canPlay =
+          isAvailable &&
+          (statusVal === "retrieved" || statusVal === "standard");
         const canRestore =
           isAvailable &&
           isS3 &&
           !isRestoreLoading &&
-          (effectiveStatus === "needs_retrieval" ||
-            effectiveStatus === "initiated" ||
-            effectiveStatus === "unsupported");
+          (statusVal === "needs_retrieval" || statusVal === "unsupported");
         const isRestoring =
           isRestoreLoading ||
-          effectiveStatus === "retrieving" ||
-          effectiveStatus === "restore_in_progress";
-        const isLoadingStatus = isS3 && effectiveStatus === "loading";
+          statusVal === "retrieving" ||
+          statusVal === "initiated" ||
+          statusVal === "in_progress" ||
+          statusVal === "restore_in_progress";
+        const isLoadingStatus = isS3 && statusVal === "loading";
         const infoText = !isAvailable
           ? "Audio not available"
           : !isS3
             ? "This recording is available for immediate playback."
-            : effectiveStatus === "retrieved"
+            : (statusVal === "retrieved" || statusVal === "standard")
               ? "This Glacier recording is restored and ready to play."
               : isRestoring
                 ? "Restore is in progress. Glacier Deep Archive usually takes 12 to 48 hours."
@@ -951,6 +954,7 @@ const InteractionPage = () => {
   const [glacierLoading, setGlacierLoading] = useState({});
 
   const [glacierPreflight, setGlacierPreflight] = useState(null);
+  const [isRestoringBulk, setIsRestoringBulk] = useState(false);
   const [glacierInfoOpen, setGlacierInfoOpen] = useState(false);
   const audioRef = useRef(null);
   const currentTablePreferencePageKey =
@@ -1072,7 +1076,11 @@ const InteractionPage = () => {
           },
         });
 
-        if (!response.ok) throw new Error("Failed to fetch privileges");
+        if (!response.ok) {
+          console.warn("Failed to fetch privileges: response not ok");
+          setPrivilegesLoaded(true);
+          return;
+        }
         const data = await response.json();
 
         setGrantedPrivileges(data.privileges || []);
@@ -1082,7 +1090,7 @@ const InteractionPage = () => {
         setAllowedExportTypes(getExportTypes(data.privileges || []));
         setPrivilegesLoaded(true);
       } catch (err) {
-        console.error("Error fetching privileges:", err);
+        console.warn("Error fetching privileges:", err);
         setPrivilegesLoaded(true);
       }
     };
@@ -1195,8 +1203,8 @@ const InteractionPage = () => {
         fileLocation: x.fileLocation,
       });
       const s = statusByKey[key];
-      if (s === "retrieved") ready.push(x.row);
-      else if (s === "retrieving") retrieving.push(x.row);
+      if (s === "retrieved" || s === "standard") ready.push(x.row);
+      else if (s === "retrieving" || s === "initiated" || s === "in_progress") retrieving.push(x.row);
       else if (s === "unsupported") unavailable.push(x.row);
       else needsRestore.push(x.row); // needs_retrieval / unknown / error
     });
@@ -1337,7 +1345,7 @@ const InteractionPage = () => {
         },
       }));
       showRestoreToast(
-        data.status === "retrieved"
+        (data.status === "retrieved" || data.status === "standard")
           ? `Call ${callId || interactionId} is ready to play.`
           : `Call ${callId || interactionId} is now retrieving. You will be notified when it is ready.`,
       );
@@ -3135,24 +3143,46 @@ const InteractionPage = () => {
     });
   };
 
-  const handleGlacierPreflightRestoreRemaining = async () => {
+  const handleGlacierPreflightRestoreRemaining = () => {
     if (!glacierPreflight) return;
-    await initiateRestoreForRows(glacierPreflight.needsRestore);
+    const needsRestore = glacierPreflight.needsRestore;
+    
+    // Close modal and show toast immediately
     setGlacierPreflight(null);
+    showRestoreToast(
+      `Restoration request submitted for ${needsRestore.length} recording(s). You will receive an email once restoration begins.`
+    );
+    
+    // Fire-and-forget Glacier restore in background
+    initiateRestoreForRows(needsRestore).catch((err) => {
+      console.error("Failed to restore Glacier audio in background:", err);
+    });
   };
 
-  const handleGlacierPreflightDownloadAndRestore = async () => {
+  const handleGlacierPreflightDownloadAndRestore = () => {
     if (!glacierPreflight) return;
     const { ready, needsRestore, downloadType, dateRangeLabel, totalMatching } =
       glacierPreflight;
 
-    const restoreCount = await initiateRestoreForRows(needsRestore);
-    await startBulkDownload({
+    // Close modal and show toast immediately
+    setGlacierPreflight(null);
+    showRestoreToast(
+      `Restoration request submitted for ${needsRestore.length} recording(s). Ready files will start downloading.`
+    );
+
+    // Fire-and-forget Glacier restore in background
+    initiateRestoreForRows(needsRestore).catch((err) => {
+      console.error("Failed to restore Glacier audio in background:", err);
+    });
+
+    // Start bulk download of ready files
+    startBulkDownload({
       rows: ready,
       downloadType,
       dateRangeLabel,
       totalMatching,
-      restoreCount,
+    }).catch((err) => {
+      console.error("Failed to start bulk download:", err);
     });
   };
 
@@ -3923,12 +3953,22 @@ const InteractionPage = () => {
                     when they’re ready to play or download.
                   </p>
                   <div className="flex flex-col gap-2 mt-2">
-                    <Button onClick={handleGlacierPreflightRestoreRemaining}>
-                      Yes, restore the {glacierPreflight.needsRestore.length}{" "}
-                      remaining
+                    <Button
+                      disabled={isRestoringBulk}
+                      onClick={handleGlacierPreflightRestoreRemaining}
+                    >
+                      {isRestoringBulk ? (
+                        <>
+                          <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                          Restoring...
+                        </>
+                      ) : (
+                        `Yes, restore the ${glacierPreflight.needsRestore.length} remaining`
+                      )}
                     </Button>
                     <Button
                       variant="ghost"
+                      disabled={isRestoringBulk}
                       onClick={() => setGlacierPreflight(null)}
                     >
                       No, not now

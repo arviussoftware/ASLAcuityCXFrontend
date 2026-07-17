@@ -378,13 +378,19 @@ const UsersPage = ({ searchParams, basePath = "/dashboard/users" }) => {
         },
         cache: "no-store",
       });
-      if (!response.ok) throw new Error("Failed to fetch privileges");
+      if (!response.ok) {
+        console.warn("Failed to fetch privileges: response not ok");
+        setGrantedPrivileges([]);
+        setAllowedExportTypes([]);
+        setPrivilegesLoaded(true);
+        return;
+      }
       const data = await response.json();
       setGrantedPrivileges(data.privileges || []);
       setAllowedExportTypes(getExportTypes(data.privileges || []));
       setPrivilegesLoaded(true);
     } catch (err) {
-      console.error("Error fetching privileges:", err);
+      console.warn("Error fetching privileges:", err);
       setGrantedPrivileges([]);
       setAllowedExportTypes([]);
       setPrivilegesLoaded(true);

@@ -68,7 +68,7 @@ const FormBuilderPage = ({ params }) => {
         router.replace("/not-found");
       }
     } catch (error) {
-      console.error("Error fetching privileges:", error);
+      console.warn("Error fetching privileges:", error);
       setHasAccess(false);
       router.replace("/not-found");
     }

@@ -46,13 +46,6 @@ function applySecurityHeaders(response) {
 
   const isProd = process.env.NODE_ENV === "production";
 
-  if (isProd) {
-    response.headers.set(
-      "Strict-Transport-Security",
-      "max-age=31536000; includeSubDomains; preload"
-    );
-  }
-
   const backendUrl = process.env.BACKEND_API_BASE_URL || "http://localhost:3000";
   let backendOrigin = "";
   if (backendUrl) {
@@ -65,9 +58,9 @@ function applySecurityHeaders(response) {
     "default-src 'self'; " +
     `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}; ` +
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-    "img-src 'self' data: blob: https://images.pexels.com https://commondatastorage.googleapis.com https://storage.googleapis.com https://*.s3.amazonaws.com https://*.s3.*.amazonaws.com; " +
-    "media-src 'self' blob: data: https://*.s3.amazonaws.com https://*.s3.*.amazonaws.com https://storage.googleapis.com; " +
-    `connect-src 'self' ws: wss: ${backendOrigin || "http://localhost:3000"}; ` +
+    "img-src 'self' data: blob: https://images.pexels.com https://commondatastorage.googleapis.com https://storage.googleapis.com https://*.s3.amazonaws.com https://*.amazonaws.com; " +
+    "media-src 'self' blob: data: https://*.s3.amazonaws.com https://*.amazonaws.com https://storage.googleapis.com; " +
+    `connect-src 'self'${isProd ? "" : " ws: wss:"} ${backendOrigin || "http://localhost:3000"}; ` +
     "frame-ancestors 'self'; " +
     "worker-src 'self' blob:; " +
     "base-uri 'self'; " +

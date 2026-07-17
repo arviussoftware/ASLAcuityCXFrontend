@@ -69,7 +69,7 @@ export default function ReportsPage() {
         setPrivilegesLoaded(true);
 
       } catch (err) {
-        console.error("Error fetching privileges:", err);
+        console.warn("Error fetching privileges:", err);
         setPrivilegesLoaded(true); // Still mark as loaded to avoid indefinite loading
       }
     };

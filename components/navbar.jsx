@@ -209,7 +209,7 @@ const Navbar = ({ collapsed, onClose, onToggle }) => {
   const fetchPermissions = async (userId) => {
     try {
       const orgId = sessionStorage.getItem("selectedOrgId") || null;
-      const response = await fetch(`/api/permission?userId=${userId}`, {
+      const response = await fetch("/api/permission", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,

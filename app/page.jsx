@@ -1,9 +1,10 @@
 "use client";
-import UserAuthForm from "@/components/user-auth-form";
+import dynamic from "next/dynamic";
 import ForgotPasswordForm from "@/components/forgot-password-form";
 import VerifyOtpForm from "@/components/verify-otp-form";
 import BrandLogo from "@/components/brand-logo";
-import LoginFooter from "@/components/login/login-footer";
+const UserAuthForm = dynamic(() => import("@/components/user-auth-form"), { ssr: false });
+const LoginFooter = dynamic(() => import("@/components/login/login-footer"), { ssr: false });
 import LegalModal from "@/components/login/legal-modal";
 import "./globals.css";
 import { useEffect, useState } from "react";

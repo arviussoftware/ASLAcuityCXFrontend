@@ -176,12 +176,16 @@ function FormsPage({ basePath = "/dashboard/forms" }) {
             orgIds: getSelectedOrgIdsHeader(),
           },
         });
-        if (!response.ok) throw new Error("Failed to fetch privileges");
+        if (!response.ok) {
+          console.warn("Failed to fetch privileges: response not ok");
+          setPrivilegesLoaded(true);
+          return;
+        }
         const data = await response.json();
         setPrivileges(data.privileges || []);
         setPrivilegesLoaded(true);
       } catch (err) {
-        console.error("Error fetching privileges:", err);
+        console.warn("Error fetching privileges:", err);
         setPrivilegesLoaded(true);
       }
     };

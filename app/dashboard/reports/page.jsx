@@ -171,7 +171,7 @@ function ReportsCombinedPage() {
         const data = await response.json();
         setPrivileges(data.privileges || []);
       } catch (err) {
-        console.error("Error fetching privileges:", err);
+        console.warn("Error fetching privileges:", err);
       } finally {
         setPrivilegesLoaded(true);
       }

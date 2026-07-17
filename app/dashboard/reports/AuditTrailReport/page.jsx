@@ -97,7 +97,7 @@ function AuditTrailReport() {
       setPrivileges(result.privileges || []);
       setPrivilegesLoaded(true);
     } catch (error) {
-      console.error("Error fetching privileges:", error);
+      console.warn("Error fetching privileges:", error);
       setPrivilegesLoaded(true);
     }
   };

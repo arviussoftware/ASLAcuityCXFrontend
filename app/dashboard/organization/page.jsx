@@ -2537,12 +2537,15 @@ const Page = () => {
           },
           cache: "no-store",
         });
-        if (!res.ok) throw new Error();
+        if (!res.ok) {
+          console.warn("Failed to fetch privileges: response not ok");
+          return;
+        }
         const data = await res.json();
         setPrivilegeId(data.privileges.map((p) => p.PrivilegeId));
         setPrivileges(data.privileges || []);
       } catch (err) {
-        console.error("Error fetching privileges:", err.message);
+        console.warn("Error fetching privileges:", err.message);
       } finally {
         setPrivilegesLoaded(true);
       }

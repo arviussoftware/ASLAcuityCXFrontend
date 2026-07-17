@@ -114,7 +114,7 @@ const UpdateUserPageContent = ({
         setHasAccess(false);
       }
     } catch (error) {
-      console.error("Error fetching privileges:", error);
+      console.warn("Error fetching privileges:", error);
       setHasAccess(false);
     }
   }, []);
