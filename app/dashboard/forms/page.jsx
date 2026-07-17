@@ -476,7 +476,7 @@ function ListRow({ form, privileges, basePath }) {
           <div className="fmg-td-info">
             <div className="fmg-td-name">{form.formName}</div>
             <div className="fmg-td-sub">
-              Created by: <span dangerouslySetInnerHTML={{ __html: form.Creationby }} />
+              Created by: <span>{form.Creationby}</span>
             </div>
           </div>
         </div>
@@ -902,7 +902,7 @@ function FormCard({ form, privileges, basePath }) {
 
         {/* Meta: creator + time */}
         <div className="fmg-card-meta">
-          <span dangerouslySetInnerHTML={{ __html: form.Creationby }} />
+          <span>{form.Creationby}</span>
           <span className="fmg-card-meta-dot">·</span>
           <span>{timeAgo}</span>
         </div>

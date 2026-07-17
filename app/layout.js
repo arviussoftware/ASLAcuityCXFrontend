@@ -3,6 +3,7 @@ import ClientLayout from "@/components/ClientLayout";
 import ThemeProvider from "@/components/ThemeProvider";
 import Providers from "./providers";
 import { Inter } from "next/font/google";
+import { headers } from "next/headers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,7 +19,7 @@ export const metadata = {
 };
 
 // Inline script: runs before first paint — applies saved color + font from localStorage
-const brandingScript = `
+const getBrandingScript = (nonce) => `
 (function() {
   try {
     var rawCached = localStorage.getItem('acuitycx_cached_branding');
@@ -122,17 +123,20 @@ const brandingScript = `
 
     var style = document.createElement('style');
     style.id = 'theme-vars-ssr';
+    if ('${nonce}') style.setAttribute('nonce', '${nonce}');
     style.textContent = ':root:root { ' + css + ' } .dark:root { ' + css + ' }';
     document.head.appendChild(style);
   } catch(e) {}
 })();
 `;
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const headersList = await headers();
+  const nonce = headersList.get("x-nonce") || "";
   return (
     <html lang="en" suppressHydrationWarning className={inter.className}>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: brandingScript }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: getBrandingScript(nonce) }} />
       </head>
       <body>
         <ThemeProvider>

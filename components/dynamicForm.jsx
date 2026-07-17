@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import CryptoJS from 'crypto-js';
+import DOMPurify from "dompurify";
 import "./Styles/FormPreview.css";
 import "./Styles/media_query_form_builder.css"
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -65,8 +66,13 @@ const DynamicForm = ({
       return ""; // Return empty string if invalid
     }
 
+    let sanitized = htmlContent;
+    if (typeof window !== "undefined") {
+      sanitized = DOMPurify.sanitize(htmlContent);
+    }
+
     const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlContent, "text/html");
+    const doc = parser.parseFromString(sanitized, "text/html");
 
     // Check if doc.body exists
     if (!doc.body) {

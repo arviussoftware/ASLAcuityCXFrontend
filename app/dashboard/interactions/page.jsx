@@ -374,10 +374,10 @@ const buildDynamicInteractionColumns = (rows = []) => {
         const isRestoreLoading = Boolean(
           table.options.meta?.glacierLoading?.[restoreKey],
         );
-        const effectiveStatus = isS3
-          ? restoreState || "loading"
-          : "retrieved";
-        const statusVal = String(effectiveStatus || "").trim().toLowerCase();
+        const effectiveStatus = isS3 ? restoreState || "loading" : "retrieved";
+        const statusVal = String(effectiveStatus || "")
+          .trim()
+          .toLowerCase();
         const canPlay =
           isAvailable &&
           (statusVal === "retrieved" || statusVal === "standard");
@@ -397,7 +397,7 @@ const buildDynamicInteractionColumns = (rows = []) => {
           ? "Audio not available"
           : !isS3
             ? "This recording is available for immediate playback."
-            : (statusVal === "retrieved" || statusVal === "standard")
+            : statusVal === "retrieved" || statusVal === "standard"
               ? "This Glacier recording is restored and ready to play."
               : isRestoring
                 ? "Restore is in progress. Glacier Deep Archive usually takes 12 to 48 hours."
@@ -1204,7 +1204,8 @@ const InteractionPage = () => {
       });
       const s = statusByKey[key];
       if (s === "retrieved" || s === "standard") ready.push(x.row);
-      else if (s === "retrieving" || s === "initiated" || s === "in_progress") retrieving.push(x.row);
+      else if (s === "retrieving" || s === "initiated" || s === "in_progress")
+        retrieving.push(x.row);
       else if (s === "unsupported") unavailable.push(x.row);
       else needsRestore.push(x.row); // needs_retrieval / unknown / error
     });
@@ -1345,7 +1346,7 @@ const InteractionPage = () => {
         },
       }));
       showRestoreToast(
-        (data.status === "retrieved" || data.status === "standard")
+        data.status === "retrieved" || data.status === "standard"
           ? `Call ${callId || interactionId} is ready to play.`
           : `Call ${callId || interactionId} is now retrieving. You will be notified when it is ready.`,
       );
@@ -2142,11 +2143,14 @@ const InteractionPage = () => {
     });
   }, []);
 
-  const handleInteractionRowClick = useCallback((row) => {
-    if (!row) return;
-    const original = row.original ?? row;
-    router.push(`/dashboard/interactions/${original.id}`);
-  }, [router]);
+  const handleInteractionRowClick = useCallback(
+    (row) => {
+      if (!row) return;
+      const original = row.original ?? row;
+      router.push(`/dashboard/interactions/${original.id}`);
+    },
+    [router],
+  );
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -2849,7 +2853,7 @@ const InteractionPage = () => {
 
       if (totalMatching > MAX_INTERACTION_BULK_DOWNLOAD) {
         alert(
-          `${totalMatching} calls matched your filters — that's more than the ${MAX_INTERACTION_BULK_DOWNLOAD} limit for a single download. ` +
+          `${totalMatching} calls matched your filters â€” that's more than the ${MAX_INTERACTION_BULK_DOWNLOAD} limit for a single download. ` +
             `Please narrow your date range (or filters) so ${MAX_INTERACTION_BULK_DOWNLOAD} or fewer calls match, then try again.`,
         );
         return;
@@ -2944,7 +2948,7 @@ const InteractionPage = () => {
     }
     if (selectedInteractions.length > MAX_INTERACTION_BULK_DOWNLOAD) {
       alert(
-        `You selected ${selectedInteractions.length} calls — that's more than the ${MAX_INTERACTION_BULK_DOWNLOAD} limit. ` +
+        `You selected ${selectedInteractions.length} calls â€” that's more than the ${MAX_INTERACTION_BULK_DOWNLOAD} limit. ` +
           `Please select ${MAX_INTERACTION_BULK_DOWNLOAD} or fewer calls.`,
       );
       return;
@@ -2995,7 +2999,6 @@ const InteractionPage = () => {
     downloadType,
     dateRangeLabel,
     totalMatching,
-    restoreCount = 0,
   }) => {
     if (!rows.length) {
       setGlacierPreflight(null);
@@ -3015,7 +3018,7 @@ const InteractionPage = () => {
       const bytes = CryptoJS.AES.decrypt(encryptedUserData || "", "");
       const user = JSON.parse(bytes.toString(CryptoJS.enc.Utf8) || "{}");
 
-      const startResponse = await fetch("/api/interactions/downloadSelected", {
+      const response = await fetch("/api/interactions/downloadSelected", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -3025,44 +3028,81 @@ const InteractionPage = () => {
         },
         body: JSON.stringify({
           interactionIds: rows,
-          userEmail: user?.email || "",
           archiveFileName,
           dateRangeLabel,
           totalMatching,
           downloadType,
+          userEmail: user?.userEmail || "",
         }),
       });
 
-      if (!startResponse.ok) {
-        throw new Error(
-          (await startResponse.text()) || "Failed to start download",
-        );
+      if (!response.ok) {
+        const errText = await response.text().catch(() => "");
+        throw new Error(errText || "Failed to start download.");
       }
 
-      const { jobId } = await startResponse.json();
+      const { jobId } = await response.json();
 
       startDownloadJob({
         jobId,
         total: rows.length,
         processed: 0,
         failed: 0,
+        notRetrieved: 0,
         archiveFileName,
         dateRangeLabel,
         downloadType,
-        skippedNotRetrieved: Math.max(0, totalMatching - rows.length),
-        restoreInitiatedCount: restoreCount,
       });
 
       resetSelections();
     } catch (err) {
       console.error(err);
-      alert("Failed to start download.");
+      alert(err?.message || "Failed to start download.");
     } finally {
       setDownloadLoading(false);
       setGlacierPreflight(null);
     }
   };
 
+  const sendRestorationStartedEmail = async ({
+    restoreCount,
+    dateRangeLabel,
+    totalMatching,
+    downloadType,
+  }) => {
+    const encryptedUserData = sessionStorage.getItem("user");
+    const bytes = CryptoJS.AES.decrypt(encryptedUserData || "", "");
+    const user = JSON.parse(bytes.toString(CryptoJS.enc.Utf8) || "{}");
+
+    // if (!user?.userEmail) {
+    //   throw new Error("No email address is available for this user.");
+    // }
+
+    const response = await fetch("/api/interactions/downloadSelected/notify", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+      },
+      body: JSON.stringify({
+        userEmail: user.userEmail,
+        userName: user?.userFullName,
+        downloadCount: 0,
+        notRetrievedCount: restoreCount,
+        dateRangeLabel,
+        totalMatching,
+        downloadType,
+        notificationType: "restoration",
+      }),
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to send restoration email.");
+    }
+
+    return data;
+  };
   const initiateRestoreForRows = async (rows) => {
     if (!rows.length) return 0;
 
@@ -3072,7 +3112,7 @@ const InteractionPage = () => {
       fileSourceType: row?.fileSourceType ?? row?.file_source_type,
     }));
 
-    // Optimistic update — same pattern as the single-row restore button —
+    // Optimistic update â€” same pattern as the single-row restore button â€”
     // so the UI flips to "Restoring" immediately instead of waiting on the network.
     setGlacierStatuses((prev) => {
       const next = { ...prev };
@@ -3106,7 +3146,7 @@ const InteractionPage = () => {
       }
       const results = Array.isArray(data.results) ? data.results : [];
 
-      // Apply the AUTHORITATIVE result from initiateObjectRestore directly —
+      // Apply the AUTHORITATIVE result from initiateObjectRestore directly â€”
       // don't rely on a follow-up HEAD check that can read stale S3 metadata
       // and flip rows back to "needs_retrieval" right after we just restored them.
       setGlacierStatuses((prev) => {
@@ -3126,7 +3166,7 @@ const InteractionPage = () => {
       console.error("Failed to initiate batch restore:", err);
       return 0;
     } finally {
-      // REMOVED: refreshGlacierStatuses() — no longer needed here since the
+      // REMOVED: refreshGlacierStatuses() â€” no longer needed here since the
       // batch response above already carries the correct post-restore status.
     }
   };
@@ -3143,20 +3183,50 @@ const InteractionPage = () => {
     });
   };
 
-  const handleGlacierPreflightRestoreRemaining = () => {
+  const handleGlacierPreflightRestoreRemaining = async () => {
     if (!glacierPreflight) return;
-    const needsRestore = glacierPreflight.needsRestore;
-    
-    // Close modal and show toast immediately
-    setGlacierPreflight(null);
-    showRestoreToast(
-      `Restoration request submitted for ${needsRestore.length} recording(s). You will receive an email once restoration begins.`
-    );
-    
-    // Fire-and-forget Glacier restore in background
-    initiateRestoreForRows(needsRestore).catch((err) => {
-      console.error("Failed to restore Glacier audio in background:", err);
-    });
+    const { needsRestore, dateRangeLabel, totalMatching, downloadType } =
+      glacierPreflight;
+
+    setIsRestoringBulk(true);
+    try {
+      const restoredCount = await initiateRestoreForRows(needsRestore);
+
+      if (restoredCount > 0) {
+        try {
+          await sendRestorationStartedEmail({
+            restoreCount: restoredCount,
+            dateRangeLabel,
+            totalMatching,
+            downloadType,
+          });
+
+          showRestoreToast(
+            `Restoration request submitted for ${restoredCount} recording(s). Email sent successfully.`,
+          );
+        } catch (err) {
+          console.warn("Failed to send restoration email:", err);
+
+          showRestoreToast(
+            `Restoration request submitted for ${restoredCount} recording(s). The notification email could not be sent.`,
+          );
+        }
+      } else {
+        showRestoreToast(
+          "No restoration requests were started. Please try again.",
+        );
+      }
+
+      setGlacierPreflight(null);
+    } catch (err) {
+      console.error("Failed to restore Glacier audio or send email:", err);
+      showRestoreToast(
+        err?.message ||
+          "Restoration request could not be completed. Please try again.",
+      );
+    } finally {
+      setIsRestoringBulk(false);
+    }
   };
 
   const handleGlacierPreflightDownloadAndRestore = () => {
@@ -3167,7 +3237,7 @@ const InteractionPage = () => {
     // Close modal and show toast immediately
     setGlacierPreflight(null);
     showRestoreToast(
-      `Restoration request submitted for ${needsRestore.length} recording(s). Ready files will start downloading.`
+      `Restoration request submitted for ${needsRestore.length} recording(s). Ready files will start downloading.`,
     );
 
     // Fire-and-forget Glacier restore in background
@@ -3352,7 +3422,7 @@ const InteractionPage = () => {
                     {from && to && (
                       <>
                         <span className="text-muted-foreground whitespace-nowrap shrink-0">
-                          {from} → {to}
+                          {from} -&gt; {to}
                         </span>
                         {filterList.length > 0 && (
                           <span className="text-muted-foreground shrink-0">
@@ -3839,15 +3909,16 @@ const InteractionPage = () => {
           <div className="text-sm space-y-3 mt-2 text-muted-foreground">
             <p>
               {
-                "Recordings are stored in AWS Glacier Deep Archive, so they aren’t always instantly available."
+                "Recordings are stored in AWS Glacier Deep Archive, so they arenâ€™t always instantly available."
               }
             </p>
 
             <div className="p-3 bg-muted rounded-md border border-border space-y-2">
               <p className="text-xs">
-                Example: out of <strong>1000</strong> matching calls —{" "}
+                Example: out of <strong>1000</strong> matching calls â€”{" "}
                 <strong>300</strong> are ready, <strong>200</strong> are already
-                restoring, and <strong>500</strong> haven’t been requested yet.
+                restoring, and <strong>500</strong> havenâ€™t been requested
+                yet.
               </p>
             </div>
 
@@ -3858,28 +3929,29 @@ const InteractionPage = () => {
               </li>
               <li>
                 A summary then tells you: 300 downloaded, 200 are restoring
-                (typically ready in <strong>12–48 hours</strong>), and 500
-                haven’t been started yet.
+                (typically ready in <strong>12â€“48 hours</strong>), and 500
+                havenâ€™t been started yet.
               </li>
               <li>
-                You’ll be asked if you want to{" "}
+                Youâ€™ll be asked if you want to{" "}
                 <strong>restore the remaining 500</strong>.
               </li>
               <li>
                 If you choose yes, those 500 are queued for restoration and
-                you’ll get an <strong>email right away</strong> confirming
-                they’re restoring.
+                youâ€™ll get an <strong>email right away</strong> confirming
+                theyâ€™re restoring.
               </li>
               <li>
-                Once Glacier finishes restoring them, you’ll get a{" "}
-                <strong>second email</strong> letting you know they’re ready to
-                play or download.
+                Once Glacier finishes restoring them, youâ€™ll get a{" "}
+                <strong>second email</strong> letting you know theyâ€™re ready
+                to play or download.
               </li>
             </ol>
 
             <p className="text-xs italic">
-              You never need to keep this page open while waiting — restoration
-              happens in the background and you’ll be notified by email.
+              You never need to keep this page open while waiting â€”
+              restoration happens in the background and youâ€™ll be notified by
+              email.
             </p>
           </div>
           <div className="flex justify-end mt-4">
@@ -3917,8 +3989,8 @@ const InteractionPage = () => {
                 <li>
                   <strong>{glacierPreflight.readyCount}</strong>{" "}
                   {glacierPreflight.readyCount === 1 ? "was" : "were"} ready and{" "}
-                  {glacierPreflight.readyCount === 1 ? "has" : "have"} been
-                  downloaded to your folder.
+                  {glacierPreflight.readyCount === 1 ? "has" : "have"} been sent
+                  to your browser Downloads folder.
                 </li>
                 <li>
                   <strong>{glacierPreflight.retrieving.length}</strong>{" "}
@@ -3949,8 +4021,9 @@ const InteractionPage = () => {
                     {glacierPreflight.needsRestore.length === 1 ? "" : "s"}?
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    You’ll get an email once restoration starts, and another
-                    when they’re ready to play or download.
+                    Once restoration starts, we will send an email confirmation.
+                    After it is sent successfully, you will see a message here
+                    asking you to check your email.
                   </p>
                   <div className="flex flex-col gap-2 mt-2">
                     <Button

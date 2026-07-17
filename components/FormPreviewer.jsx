@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import "./Styles/FormPreview.css";
+import DOMPurify from "dompurify";
 import "./Styles/media_query_form_builder.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useRouter } from "next/navigation";
@@ -107,23 +108,13 @@ const FormPreviewer = ({
       return ""; // Return empty string if invalid
     }
 
-    const allowedTags = [
-      "ol",
-      "ul",
-      "li",
-      "u",
-      "b",
-      "i",
-      "strong",
-      "em",
-      "span",
-      "div",
-      "p",
-    ];
-    // const allowedAttributes = ["class", "style"];
+    let sanitized = htmlContent;
+    if (typeof window !== "undefined") {
+      sanitized = DOMPurify.sanitize(htmlContent);
+    }
 
     const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlContent, "text/html");
+    const doc = parser.parseFromString(sanitized, "text/html");
 
     // Check if doc.body exists
     if (!doc.body) {

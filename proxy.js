@@ -33,7 +33,7 @@ if (!API_SECRET_KEY) {
   throw new Error("CRITICAL: API_SECRET_KEY environment variable is required in production!");
 }
 
-function applySecurityHeaders(response) {
+function applySecurityHeaders(response, nonce = "") {
   response.headers.set("X-Frame-Options", "SAMEORIGIN");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -56,8 +56,12 @@ function applySecurityHeaders(response) {
 
   const cspValue =
     "default-src 'self'; " +
-    `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}; ` +
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    (nonce
+      ? `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isProd ? "" : " 'unsafe-eval'"}; `
+      : `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}; `) +
+    (nonce
+      ? `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com; `
+      : "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; ") +
     "img-src 'self' data: blob: https://images.pexels.com https://commondatastorage.googleapis.com https://storage.googleapis.com https://*.s3.amazonaws.com https://*.amazonaws.com; " +
     "media-src 'self' blob: data: https://*.s3.amazonaws.com https://*.amazonaws.com https://storage.googleapis.com; " +
     `connect-src 'self'${isProd ? "" : " ws: wss:"} ${backendOrigin || "http://localhost:3000"}; ` +
@@ -72,6 +76,9 @@ function applySecurityHeaders(response) {
 
 export async function proxy(req) {
   const { pathname } = req.nextUrl;
+  const nonce = btoa(crypto.randomUUID()).replace(/=/g, "");
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-nonce", nonce);
   
   // Prevent infinite rewrite loops when frontend is run on the backend's port (3000)
   const host = req.headers.get("host") || "";
@@ -86,7 +93,8 @@ export async function proxy(req) {
             message: `Infinite proxy loop detected! The frontend is running on the same port (${host}) as the BACKEND_API_BASE_URL (${backendUrl}). Please ensure you run the frontend on a different port (e.g. port 5000 via 'npm run dev' or 'next dev -p 5000') and run the backend API on port 3000.`
           },
           { status: 508 }
-        )
+        ),
+        nonce
       );
     }
   } catch (e) {
@@ -95,7 +103,14 @@ export async function proxy(req) {
 
   // Allow public routes
   if (PUBLIC_PATHS.includes(pathname)) {
-    return applySecurityHeaders(NextResponse.next());
+    return applySecurityHeaders(
+      NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      }),
+      nonce
+    );
   }
 
   if (pathname.startsWith("/api") || pathname.startsWith("/dashboard")) {
@@ -107,7 +122,6 @@ export async function proxy(req) {
                           (authQuery && authQuery === apiToken);
 
     if (hasValidToken) {
-      const requestHeaders = new Headers(req.headers);
       if (apiToken) {
         requestHeaders.set("Authorization", `Bearer ${apiToken}`);
       }
@@ -116,7 +130,8 @@ export async function proxy(req) {
           request: {
             headers: requestHeaders,
           },
-        })
+        }),
+        nonce
       );
     }
 
@@ -128,17 +143,17 @@ export async function proxy(req) {
           NextResponse.json(
             { message: "Unauthorized: No session" },
             { status: 401 }
-          )
+          ),
+          nonce
         );
       }
-      return applySecurityHeaders(NextResponse.redirect(new URL("/", req.url)));
+      return applySecurityHeaders(NextResponse.redirect(new URL("/", req.url)), nonce);
     }
 
     try {
       const secret = new TextEncoder().encode(API_SECRET_KEY); // Ensure same secret
       const { payload } = await jwtVerify(token, secret);
 
-      const requestHeaders = new Headers(req.headers);
       requestHeaders.set("x-user-id", String(payload.userId));
       requestHeaders.set("x-user-role", payload.userRole || "");
       // Include licensed modules from JWT so downstream APIs can enforce licensing
@@ -161,7 +176,8 @@ export async function proxy(req) {
           request: {
             headers: requestHeaders,
           },
-        })
+        }),
+        nonce
       );
     } catch (err) {
       console.warn("JWT verify failed in middleware:", err?.message || err);
@@ -170,12 +186,20 @@ export async function proxy(req) {
           NextResponse.json(
             { message: "Unauthorized: Invalid session" },
             { status: 401 }
-          )
+          ),
+          nonce
         );
       }
-      return applySecurityHeaders(NextResponse.redirect(new URL("/", req.url)));
+      return applySecurityHeaders(NextResponse.redirect(new URL("/", req.url)), nonce);
     }
   }
 
-  return applySecurityHeaders(NextResponse.next());
+  return applySecurityHeaders(
+    NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    }),
+    nonce
+  );
 }

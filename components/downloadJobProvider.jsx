@@ -80,6 +80,31 @@ export function DownloadJobProvider({ children }) {
     }
   }, []);
 
+  const triggerFileDownload = useCallback(async (jobId, archiveFileName) => {
+    try {
+      const token = process.env.NEXT_PUBLIC_API_TOKEN;
+      const res = await fetch(
+        `/api/interactions/downloadSelected/file?jobId=${jobId}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (!res.ok) {
+        console.error("Failed to fetch completed export file:", res.status);
+        return;
+      }
+      const blob = await res.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = downloadUrl;
+      a.download = archiveFileName || "Interactions.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+    } catch (err) {
+      console.error("Failed to download export file:", err);
+    }
+  }, []);
+
   const pollJob = useCallback(
     (jobId) => {
       const token = process.env.NEXT_PUBLIC_API_TOKEN;
@@ -93,21 +118,34 @@ export function DownloadJobProvider({ children }) {
           if (!res.ok) return;
           const { job } = await res.json();
 
+          let shouldTriggerDownload = false;
+          let archiveFileNameForDownload = null;
+
           setDownloadJob((prev) => {
             if (!prev || prev.jobId !== jobId) return prev;
 
             const merged = { ...prev, ...job, jobId };
 
-            // If we've optimistically shown "cancelling" locally, don't let
-            // a poll that still says "running" (because the server hasn't
-            // finished tearing down yet) flicker it back. Only a terminal
-            // status from the server should override "cancelling".
             if (prev.status === "cancelling" && job.status === "running") {
               merged.status = "cancelling";
             }
 
+            const isDownloadable =
+              merged.status === "completed" ||
+              (merged.status === "cancelled" && merged.processed > 0);
+
+            if (isDownloadable && !prev.fileDownloaded) {
+              shouldTriggerDownload = true;
+              archiveFileNameForDownload = merged.archiveFileName;
+              merged.fileDownloaded = true;
+            }
+
             return merged;
           });
+
+          if (shouldTriggerDownload) {
+            triggerFileDownload(jobId, archiveFileNameForDownload);
+          }
 
           if (
             job.status === "completed" ||
@@ -532,15 +570,15 @@ const DownloadProgressWidget = ({
 
       {isCancelled && (
         <p className="text-[10px] text-muted-foreground">
-          Download cancelled. {job.processed} recording(s) were saved to a
+          Download cancelled. {job.processed} recording(s) were downloaded in a
           partial zip before stopping. You can start a new download anytime.
         </p>
       )}
 
       {isDone && (
         <p className="text-[10px] text-emerald-600">
-          {job.processed} recording(s) zipped successfully. Check your email for
-          details.
+          {job.processed} recording(s) downloaded successfully. Check your
+          browser Downloads folder.
           {job.notRetrieved > 0 && (
             <span className="block text-amber-600 mt-1">
               {job.notRetrieved} recording(s) were skipped because they haven’t

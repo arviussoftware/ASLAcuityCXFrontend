@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
+import DOMPurify from "dompurify";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import DynamicformNavbar from "./DynamicformNavbar";
 import FormStructure from './FormStructure';
@@ -58,8 +59,13 @@ const SubmittedForm = ({
       return ""; // Return empty string if invalid
     }
 
+    let sanitized = htmlContent;
+    if (typeof window !== "undefined") {
+      sanitized = DOMPurify.sanitize(htmlContent);
+    }
+
     const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlContent, "text/html");
+    const doc = parser.parseFromString(sanitized, "text/html");
 
     // Check if doc.body exists
     if (!doc.body) {
