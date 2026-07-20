@@ -136,7 +136,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning className={inter.className}>
       <head>
-        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: getBrandingScript(nonce) }} />
+        <script nonce={nonce} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: getBrandingScript(nonce) }} />
       </head>
       <body>
         <ThemeProvider>
