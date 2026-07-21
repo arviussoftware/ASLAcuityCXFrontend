@@ -3,6 +3,7 @@ import { Suspense, useState, useEffect } from "react";
 import CryptoJS from "crypto-js";
 import withAuth from "@/components/withAuth";
 import Link from "next/link";
+import { useNonce } from "@/components/NonceProvider";
 import { notFound, useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { HiMiniInformationCircle } from "react-icons/hi2";
@@ -149,7 +150,10 @@ function decryptUser() {
 }
 
 async function fetchMe() {
-  const res = await fetch("/api/auth/me", { credentials: "include", cache: "no-store" });
+  const res = await fetch("/api/auth/me", {
+    credentials: "include",
+    cache: "no-store",
+  });
   if (!res.ok) return null;
   return res.json();
 }
@@ -257,7 +261,9 @@ function CreateRoleModal({ onClose, onCreated, basePath }) {
       if (res.ok && data.success) {
         onCreated?.();
         onClose();
-        router.push(`${basePath}/${data.newRole.user_role_id}?roleName=${encodeURIComponent(name.trim())}`);
+        router.push(
+          `${basePath}/${data.newRole.user_role_id}?roleName=${encodeURIComponent(name.trim())}`,
+        );
       } else {
         alert(`Failed to add role: ${data.message}`);
       }
@@ -362,13 +368,13 @@ function RoleRow({ role, canEdit, canDelete, canManagePrivileges, onRefresh }) {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-const roleName = role?.user_role || role?.user_role_name || "Unknown Role";
+  const roleName = role?.user_role || role?.user_role_name || "Unknown Role";
 
-const initials = roleName
-  .split(" ")
-  .slice(0, 2)
-  .map((w) => w[0]?.toUpperCase())
-  .join("");
+  const initials = roleName
+    .split(" ")
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
 
   const handleDelete = async () => {
     if (!confirm(`Are you sure you want to Delete role "${role.user_role}"?`))
@@ -505,8 +511,8 @@ const initials = roleName
               />
             )}
           </div>
-         </td>
-       </tr>
+        </td>
+      </tr>
 
       {/* ── Edit Modal ── */}
       {showEdit && (
@@ -514,7 +520,9 @@ const initials = roleName
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
             <div>
               <p className="text-sm font-semibold text-gray-800">Edit Role</p>
-              <p className="text-[11px] text-gray-400 mt-0.5">Update name or description</p>
+              <p className="text-[11px] text-gray-400 mt-0.5">
+                Update name or description
+              </p>
             </div>
             <button
               onClick={() => setShowEdit(false)}
@@ -526,20 +534,28 @@ const initials = roleName
           </div>
           <div className="px-5 py-4 space-y-3">
             <div>
-              <label className="block text-[11px] font-semibold text-gray-600 mb-1.5">Role Name</label>
+              <label className="block text-[11px] font-semibold text-gray-600 mb-1.5">
+                Role Name
+              </label>
               <input
                 type="text"
                 value={editName}
-                onChange={(e) => setEditName(e.target.value.replace(/[^a-zA-Z0-9 ]/g, ""))}
+                onChange={(e) =>
+                  setEditName(e.target.value.replace(/[^a-zA-Z0-9 ]/g, ""))
+                }
                 maxLength={20}
                 placeholder="Role name"
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm
                            focus:outline-none focus:border-blue-400 transition-colors placeholder-gray-300"
               />
-              <p className="text-[10px] text-gray-300 mt-1">{editName.length}/20</p>
+              <p className="text-[10px] text-gray-300 mt-1">
+                {editName.length}/20
+              </p>
             </div>
             <div>
-              <label className="block text-[11px] font-semibold text-gray-600 mb-1.5">Description</label>
+              <label className="block text-[11px] font-semibold text-gray-600 mb-1.5">
+                Description
+              </label>
               <input
                 type="text"
                 value={editDesc}
@@ -552,9 +568,22 @@ const initials = roleName
             </div>
           </div>
           <div className="px-5 py-3.5 border-t border-gray-100 flex justify-end gap-2">
-            <button onClick={() => setShowEdit(false)} className="btn-ghost">Cancel</button>
-            <button onClick={handleEditSubmit} disabled={saving} className="btn-primary">
-              {saving ? <><span className="btn-spinner" />Saving…</> : "Save changes"}
+            <button onClick={() => setShowEdit(false)} className="btn-ghost">
+              Cancel
+            </button>
+            <button
+              onClick={handleEditSubmit}
+              disabled={saving}
+              className="btn-primary"
+            >
+              {saving ? (
+                <>
+                  <span className="btn-spinner" />
+                  Saving…
+                </>
+              ) : (
+                "Save changes"
+              )}
             </button>
           </div>
         </Modal>
@@ -634,7 +663,9 @@ function RoleTable({
         setRoles(
           superAdmin || !superAdminRoleId
             ? incoming
-            : incoming.filter((r) => Number(r.roleId) !== Number(superAdminRoleId)),
+            : incoming.filter(
+                (r) => Number(r.roleId) !== Number(superAdminRoleId),
+              ),
         );
       }
     } catch (err) {
@@ -723,6 +754,7 @@ function RoleTable({
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 function RolesPage({ basePath = "/dashboard/roleManagement" }) {
+  const nonce = useNonce();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [roleSubmitted, setRoleSubmitted] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -765,7 +797,10 @@ function RolesPage({ basePath = "/dashboard/roleManagement" }) {
   if (!privilegesLoaded)
     return (
       <>
-        <style dangerouslySetInnerHTML={{ __html: FONT_IMPORT }} />
+        <style
+          nonce={nonce}
+          dangerouslySetInnerHTML={{ __html: FONT_IMPORT }}
+        />
         <div className="flex items-center gap-2.5 py-10 justify-center">
           <div className="w-4 h-4 border-[1.5px] border-slate-900 border-t-transparent rounded-full animate-spin" />
           <span className="text-xs text-gray-400">Checking access…</span>
@@ -782,7 +817,7 @@ function RolesPage({ basePath = "/dashboard/roleManagement" }) {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: FONT_IMPORT }} />
+      <style nonce={nonce} dangerouslySetInnerHTML={{ __html: FONT_IMPORT }} />
 
       <div className="space-y-4">
         {/* ── PAGE HEADER ── */}
@@ -881,7 +916,10 @@ function RolesPage({ basePath = "/dashboard/roleManagement" }) {
         />
       )}
       <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto" aria-describedby={undefined}>
+        <DialogContent
+          className="max-w-lg max-h-[80vh] overflow-y-auto"
+          aria-describedby={undefined}
+        >
           <DialogTitle className="text-sm font-semibold">
             Role Management — How it works
           </DialogTitle>
@@ -906,8 +944,8 @@ function RolesPage({ basePath = "/dashboard/roleManagement" }) {
                 ➕ Creating a New Role
               </p>
               <p>
-                Click the <strong>&quot;New Role&quot;</strong> button to open the
-                creation form. You will need to fill in:
+                Click the <strong>&quot;New Role&quot;</strong> button to open
+                the creation form. You will need to fill in:
               </p>
               <ul className="mt-1.5 space-y-1 pl-3 list-disc">
                 <li>
@@ -933,8 +971,8 @@ function RolesPage({ basePath = "/dashboard/roleManagement" }) {
               <p>
                 On the Privileges page, you must first{" "}
                 <strong>select an Organization</strong>
-                to map to the role. This determines which organization&apos;s modules
-                and privileges you are configuring for this role.
+                to map to the role. This determines which organization&apos;s
+                modules and privileges you are configuring for this role.
               </p>
               <p className="mt-1.5">
                 Once an organization is selected, all available{" "}
@@ -969,8 +1007,8 @@ function RolesPage({ basePath = "/dashboard/roleManagement" }) {
               </p>
               <p>
                 For any existing role in the list, click the{" "}
-                <strong>&quot;Privileges&quot;</strong> button in its row. On the
-                Privileges page:
+                <strong>&quot;Privileges&quot;</strong> button in its row. On
+                the Privileges page:
               </p>
               <ul className="mt-1.5 space-y-1 pl-3 list-disc">
                 <li>

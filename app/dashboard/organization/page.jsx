@@ -2837,13 +2837,13 @@ const Page = () => {
     }
     const userId = getUserId();
     try {
-        const res = await fetch("/api/organization", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
-            orgIds: getSelectedOrgIdsHeader(),
-          },
+      const res = await fetch("/api/organization", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+          orgIds: getSelectedOrgIdsHeader(),
+        },
         body: JSON.stringify({
           name: newChildName,
           description: newChildDesc,
@@ -2858,7 +2858,10 @@ const Page = () => {
         closePanel();
         await fetchOrganization({ preserveView: true });
       } else {
-        alert(data.message || "Failed to create organization. It may already exist or limit reached.");
+        alert(
+          data.message ||
+            "Failed to create organization. It may already exist or limit reached.",
+        );
       }
     } catch (err) {
       alert(`Error: ${err.message}`);
@@ -2903,7 +2906,10 @@ const Page = () => {
         closePanel();
         await fetchOrganization({ preserveView: true });
       } else {
-        alert(data.message || "Failed to update organization. Name may already exist.");
+        alert(
+          data.message ||
+            "Failed to update organization. Name may already exist.",
+        );
       }
     } catch (err) {
       alert(`Error: ${err.message || err}`);
@@ -2931,7 +2937,10 @@ const Page = () => {
         await fetchOrganization();
       } else {
         if (data.statusCode === 403 || data.statusCode === 410) {
-          setAssociationErrorMsg(data.message || "there is a child user exist delete them first to delete the organization");
+          setAssociationErrorMsg(
+            data.message ||
+              "there is a child user exist delete them first to delete the organization",
+          );
           setShowAssociationError(true);
           return;
         }
@@ -3333,7 +3342,8 @@ const Page = () => {
                 color: "hsl(var(--foreground))",
               }}
             >
-              {associationErrorMsg || "This organization or its children may be associated with users. Please de-associate them first."}
+              {associationErrorMsg ||
+                "This organization or its children may be associated with users. Please de-associate them first."}
             </p>
             <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
               <button

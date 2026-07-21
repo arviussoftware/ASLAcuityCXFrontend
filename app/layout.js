@@ -4,13 +4,13 @@ import ThemeProvider from "@/components/ThemeProvider";
 import Providers from "./providers";
 import { Inter } from "next/font/google";
 import { headers } from "next/headers";
+import { NonceProvider } from "@/components/NonceProvider";
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
-
 
 export const metadata = {
   title: "AcuityCX",
@@ -136,12 +136,20 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning className={inter.className}>
       <head>
-        <script nonce={nonce} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: getBrandingScript(nonce) }} />
+        <script
+          nonce={nonce}
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: getBrandingScript(nonce) }}
+        />
       </head>
       <body>
-        <ThemeProvider>
-        <Providers><ClientLayout>{children}</ClientLayout></Providers>
-        </ThemeProvider>
+        <NonceProvider value={nonce}>
+          <ThemeProvider>
+            <Providers>
+              <ClientLayout>{children}</ClientLayout>
+            </Providers>
+          </ThemeProvider>
+        </NonceProvider>
       </body>
     </html>
   );

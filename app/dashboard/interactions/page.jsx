@@ -3078,6 +3078,15 @@ const InteractionPage = () => {
     //   throw new Error("No email address is available for this user.");
     // }
 
+    // Skip sending if user has no email
+    if (!user?.userEmail) {
+      console.info("User has no registered email. Skipping notification.");
+      return {
+        skipped: true,
+        reason: "NO_EMAIL",
+      };
+    }
+
     const response = await fetch("/api/interactions/downloadSelected/notify", {
       method: "POST",
       headers: {
@@ -3194,16 +3203,22 @@ const InteractionPage = () => {
 
       if (restoredCount > 0) {
         try {
-          await sendRestorationStartedEmail({
+          const emailResult = await sendRestorationStartedEmail({
             restoreCount: restoredCount,
             dateRangeLabel,
             totalMatching,
             downloadType,
           });
 
-          showRestoreToast(
-            `Restoration request submitted for ${restoredCount} recording(s). Email sent successfully.`,
-          );
+          if (emailResult?.skipped) {
+            showRestoreToast(
+              `Restoration request submitted for ${restoredCount} recording(s). No email is registered, so no notification was sent.`,
+            );
+          } else {
+            showRestoreToast(
+              `Restoration request submitted for ${restoredCount} recording(s). Email sent successfully.`,
+            );
+          }
         } catch (err) {
           console.warn("Failed to send restoration email:", err);
 
