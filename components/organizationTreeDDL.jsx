@@ -13,12 +13,16 @@ async function fetchOrganizationTree() {
     },
     cache: "no-store",
   });
-  const data = await response.json();
-  if (response.ok) {
-    return data.organizationList;
-  } else {
-    throw new Error(data.message || "Failed to fetch organization data");
+  if (!response.ok) {
+    let message = `Failed to fetch organization data (HTTP ${response.status})`;
+    try {
+      const errData = await response.json();
+      if (errData?.message) message = errData.message;
+    } catch {}
+    throw new Error(message);
   }
+  const data = await response.json();
+  return data.organizationList;
 }
 
 // Convert tree structure into react-select-compatible format

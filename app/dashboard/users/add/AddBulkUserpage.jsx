@@ -578,6 +578,7 @@ const AddBulkUserPage = ({ onSuccess }) => {
       }
 
       effectiveSelectedRoles = [defaultAgentRole];
+      setSelectedRoles([defaultAgentRole]);
     }
 
     const isAgent = effectiveSelectedRoles.some((role) =>

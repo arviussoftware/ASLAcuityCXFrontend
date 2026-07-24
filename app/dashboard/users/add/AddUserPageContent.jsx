@@ -236,11 +236,41 @@ const AddUserPageContent = ({
     event.preventDefault();
     setErrors({});
 
-    if (!selectedOrganizations.length) {
-      setErrors({ orgIds: "At least one organization must be selected." });
+    const mappedOrgIds = selectedOrganizations.map((org) => ({
+      orgId: org.value,
+    }));
+
+    const baseData = {
+      ...Object.fromEntries(new FormData(event.target).entries()),
+      email: event.target.email.value.toLowerCase(),
+      userLoginId: event.target.userLoginId.value,
+      firstName: event.target.firstName.value,
+      middleName: event.target.middleName.value,
+      lastName: event.target.lastName.value,
+      orgIds: mappedOrgIds,
+    };
+
+    // Validate everything (including org selection) in a single pass so
+    // all field errors surface together, instead of one at a time.
+    const validationResult = ValidationSchema.safeParse(baseData);
+
+    if (!validationResult.success) {
+      const fieldErrors = validationResult.error.errors.reduce((acc, err) => {
+        acc[err.path[0]] = err.message;
+        setTimeout(() => {
+          setErrors((prev) => {
+            const { [err.path[0]]: _, ...rest } = prev;
+            return rest;
+          });
+        }, 3000);
+        return acc;
+      }, {});
+      setErrors(fieldErrors);
       return;
     }
 
+    // Only reached once every basic field (including org) is valid —
+    // now it's safe to handle the role-default confirmation flow.
     let effectiveSelectedRoles = selectedRoles;
 
     if (selectedRoles.length === 0) {
@@ -300,24 +330,14 @@ const AddUserPageContent = ({
     const mappedRoleIds = effectiveSelectedRoles.map((role) => ({
       roleId: role.value,
     }));
-    const mappedOrgIds = selectedOrganizations.map((org) => ({
-      orgId: org.value,
-    }));
 
     const data = {
-      ...Object.fromEntries(new FormData(event.target).entries()),
-      email: event.target.email.value.toLowerCase(),
-      userLoginId: event.target.userLoginId.value,
-      firstName: event.target.firstName.value,
-      middleName: event.target.middleName.value,
-      lastName: event.target.lastName.value,
+      ...baseData,
       rolesIds: mappedRoleIds,
-      orgIds: mappedOrgIds,
       currentUserId,
     };
 
     try {
-      ValidationSchema.parse(data);
       const response = await fetch("/api/users/add", {
         method: "POST",
         headers: {
@@ -338,25 +358,11 @@ const AddUserPageContent = ({
         alert(result.message || "An unexpected error occurred.");
       }
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        const fieldErrors = error.errors.reduce((acc, err) => {
-          acc[err.path[0]] = err.message;
-          setTimeout(() => {
-            setErrors((prev) => {
-              const { [err.path[0]]: _, ...rest } = prev;
-              return rest;
-            });
-          }, 3000);
-          return acc;
-        }, {});
-        setErrors(fieldErrors);
-      } else {
-        console.error("Error in handleSubmit:", error.message);
-        alert(
-          error.message ||
-            "An unexpected error occurred while creating the user.",
-        );
-      }
+      console.error("Error in handleSubmit:", error.message);
+      alert(
+        error.message ||
+          "An unexpected error occurred while creating the user.",
+      );
     } finally {
       setIsSubmitting(false);
       onSubmittingChange?.(false);

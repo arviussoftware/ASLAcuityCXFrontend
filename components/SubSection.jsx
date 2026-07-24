@@ -5,8 +5,6 @@ import withAuth from "@/components/withAuth";
 import { PiNotebookBold } from "react-icons/pi";
 import { Trash2, Copy } from "lucide-react";
 import dynamic from "next/dynamic";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.snow.css"; // Import styles
 
 const SubSection = ({
   isSubSectionCollapsed,
@@ -199,39 +197,19 @@ const SubSection = ({
               id={`subsection-${sectionIndex}-${subsectionIndex}`}
               style={{ width: "100%" }}
             />
-            <ReactQuill
+            <textarea
               placeholder="Sub-Category Instructions"
               value={subSection.subsectionDescription}
               maxLength={250}
-              onChange={(value) =>
+              rows={3}
+              onChange={(e) =>
                 onSubsectionDescriptionChange(
                   sectionIndex,
                   subsectionIndex,
-                  value, // Pass the value directly
+                  e.target.value,
                 )
               }
-              style={{
-                width: "100%",
-                backgroundColor: "#ffffff",
-                borderRadius: "8px",
-              }}
-              modules={{
-                toolbar: [
-                  ["bold", "italic", "underline"],
-                  [{ list: "ordered" }, { list: "bullet" }],
-                  // ["link", "image"], // Insert link and image
-                  [{ align: [] }],
-                  ["clean"], // Remove formatting
-                ],
-              }}
-              formats={[
-                "bold",
-                "italic",
-                "underline",
-                "list",
-                "bullet",
-                "align",
-              ]}
+              className="w-full p-2 border border-gray-300 rounded-md bg-white text-sm"
             />
             <div className="visibility-controls">
               <label className="toggle-switch">
@@ -1286,42 +1264,20 @@ const SubSection = ({
                       </div>
                     </div>
                   )}
-                  <ReactQuill
+                  <textarea
                     placeholder="Question Instructions"
                     value={question.SubQuestionInstructions}
                     maxLength={250}
-                    onChange={(value) =>
+                    rows={2}
+                    onChange={(e) =>
                       onHandleSubQuestionInstruction(
                         sectionIndex,
                         subsectionIndex,
                         qIndex,
-                        value, // Pass the value directly
+                        e.target.value,
                       )
                     }
-                    style={{
-                      width: "97%",
-                      backgroundColor: "#ffffff",
-                      borderRadius: "8px",
-                    }}
-                    modules={{
-                      toolbar: [
-                        ["bold", "italic", "underline"],
-                        [{ list: "ordered" }, { list: "bullet" }],
-                        //  ["link", "image"], // Insert link and image
-                        [{ align: [] }], // Text alignment
-                        ["clean"], // Remove formatting
-                      ],
-                    }}
-                    formats={[
-                      "bold",
-                      "italic",
-                      "underline",
-                      "list",
-                      "bullet",
-                      // "link",
-                      // "image",
-                      "align",
-                    ]}
+                    className="w-[97%] p-2 border border-gray-300 rounded-md bg-white text-sm mt-2"
                   />
                   <div class="action-container">
                     <label className="checkbox-label">

@@ -30,8 +30,17 @@ const EvaluatorDropdown = async () => {
     cache: "no-store",
   });
 
+  if (!response.ok) {
+    let message = `Failed to fetch evaluator names (HTTP ${response.status})`;
+    try {
+      const errData = await response.json();
+      if (errData?.message) message = errData.message;
+    } catch {}
+    throw new Error(message);
+  }
+
   const result = await response.json();
-  if (response.ok && result.success) {
+  if (result.success) {
     return result.data;
   } else {
     throw new Error(result.message || "Failed to fetch evaluator names");

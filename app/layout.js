@@ -2,15 +2,10 @@
 import ClientLayout from "@/components/ClientLayout";
 import ThemeProvider from "@/components/ThemeProvider";
 import Providers from "./providers";
-import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 import { NonceProvider } from "@/components/NonceProvider";
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
+const inter = { className: "" };
 
 export const metadata = {
   title: "AcuityCX",

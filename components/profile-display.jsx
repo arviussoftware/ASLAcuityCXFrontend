@@ -82,7 +82,7 @@ const ProfilePicture = ({ userId, currentPic, loginId }) => {
         window.dispatchEvent(
           new CustomEvent("profile:picture-updated", {
             detail: { picturePath: data.picturePath },
-          })
+          }),
         );
       }
       setTimeout(() => setSuccess(false), 3000);
@@ -121,14 +121,43 @@ const ProfilePicture = ({ userId, currentPic, loginId }) => {
           {/* Hover overlay */}
           <div className="absolute inset-0 rounded-full bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             {uploading ? (
-              <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8H4z"
+                />
               </svg>
             ) : (
-              <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              <svg
+                className="h-5 w-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                />
               </svg>
             )}
           </div>
@@ -155,9 +184,7 @@ const ProfilePicture = ({ userId, currentPic, loginId }) => {
           >
             {uploading ? "Uploading..." : "Change photo"}
           </button>
-          {error && (
-            <span className="text-xs text-red-500">{error}</span>
-          )}
+          {error && <span className="text-xs text-red-500">{error}</span>}
         </div>
       </div>
 
@@ -189,13 +216,26 @@ const ProfileDisplay = () => {
   const [selectedTimezone, setSelectedTimezone] = useState("");
   const [themeMode, setThemeMode] = useState(DEFAULT_BRANDING.themeMode);
   const [themePreset, setThemePreset] = useState(DEFAULT_BRANDING.themePreset);
-  const [primaryColor, setPrimaryColor] = useState(DEFAULT_BRANDING.primaryColor);
-  const [secondaryColor, setSecondaryColor] = useState(DEFAULT_BRANDING.secondaryColor);
+  const [primaryColor, setPrimaryColor] = useState(
+    DEFAULT_BRANDING.primaryColor,
+  );
+  const [secondaryColor, setSecondaryColor] = useState(
+    DEFAULT_BRANDING.secondaryColor,
+  );
   const [fontFamily, setFontFamily] = useState(DEFAULT_BRANDING.fontFamily);
 
   const THEME_PRESETS = [
-    "default", "blue", "orange", "red", "yellow", "green",
-    "teal", "cyan", "indigo", "violet", "pink",
+    "default",
+    "blue",
+    "orange",
+    "red",
+    "yellow",
+    "green",
+    "teal",
+    "cyan",
+    "indigo",
+    "violet",
+    "pink",
   ];
 
   useEffect(() => {
@@ -246,7 +286,8 @@ const ProfileDisplay = () => {
           setTimezonesList(result.data);
 
           if (result.data.length > 0) {
-            const encryptedTimezone = sessionStorage.getItem("selectedTimezone");
+            const encryptedTimezone =
+              sessionStorage.getItem("selectedTimezone");
             let savedTimezone = null;
 
             if (encryptedTimezone) {
@@ -264,7 +305,8 @@ const ProfileDisplay = () => {
             } else {
               setSelectedTimezone(result.data[0].TimeZone);
               const encrypted = CryptoJS.AES.encrypt(
-                JSON.stringify(result.data[0].TimeZone), ""
+                JSON.stringify(result.data[0].TimeZone),
+                "",
               ).toString();
               sessionStorage.setItem("selectedTimezone", encrypted);
             }
@@ -297,7 +339,14 @@ const ProfileDisplay = () => {
   }, []);
 
   const persistBranding = (next) => {
-    const payload = { themeMode, themePreset, primaryColor, secondaryColor, fontFamily, ...next };
+    const payload = {
+      themeMode,
+      themePreset,
+      primaryColor,
+      secondaryColor,
+      fontFamily,
+      ...next,
+    };
     localStorage.setItem("brandingOverrides", JSON.stringify(payload));
     window.dispatchEvent(new Event("branding:update"));
   };
@@ -309,7 +358,10 @@ const ProfileDisplay = () => {
         <>
           {items.join(", ")}{" "}
           {items.length > 3 && (
-            <button className="text-primary underline ml-1" onClick={() => setShowAll(false)}>
+            <button
+              className="text-primary underline ml-1"
+              onClick={() => setShowAll(false)}
+            >
               Show less
             </button>
           )}
@@ -320,7 +372,10 @@ const ProfileDisplay = () => {
     return (
       <>
         {visible.join(", ")}{" "}
-        <button className="text-primary underline ml-1" onClick={() => setShowAll(true)}>
+        <button
+          className="text-primary underline ml-1"
+          onClick={() => setShowAll(true)}
+        >
           +{items.length - 3} more
         </button>
       </>
@@ -329,12 +384,16 @@ const ProfileDisplay = () => {
 
   const userRolesVal = userData?.roles || userData?.Roles;
   const roles = userRolesVal
-    ? Array.isArray(userRolesVal) ? userRolesVal : userRolesVal.split(",").map((r) => r.trim())
+    ? Array.isArray(userRolesVal)
+      ? userRolesVal
+      : userRolesVal.split(",").map((r) => r.trim())
     : [];
 
   const userOrgsVal = userData?.organizations || userData?.Organizations;
   const organizations = userOrgsVal
-    ? Array.isArray(userOrgsVal) ? userOrgsVal : userOrgsVal.split(",").map((o) => o.trim())
+    ? Array.isArray(userOrgsVal)
+      ? userOrgsVal
+      : userOrgsVal.split(",").map((o) => o.trim())
     : [];
 
   if (loading) return <p>Loading profile...</p>;
@@ -343,7 +402,6 @@ const ProfileDisplay = () => {
 
   return (
     <div className="space-y-4 rounded-xl border border-border bg-card p-4 shadow-sm">
-
       {/* â”€â”€ Header: Avatar + Name â”€â”€ */}
       <div className="flex items-center gap-4">
         {/* âœ… Profile Picture Upload Component */}
@@ -354,8 +412,12 @@ const ProfileDisplay = () => {
         />
 
         <div className="min-w-0">
-          <p className="text-base font-semibold truncate">{userData.user_login_id}</p>
-          <p className="text-xs text-muted-foreground truncate">{userData.email}</p>
+          <p className="text-base font-semibold truncate">
+            {userData.user_login_id}
+          </p>
+          <p className="text-xs text-muted-foreground truncate">
+            {userData.email}
+          </p>
         </div>
       </div>
 
@@ -363,38 +425,53 @@ const ProfileDisplay = () => {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div className="rounded-lg border border-border/70 bg-muted/40 p-3">
           <p className="text-xs text-muted-foreground">Full Name</p>
-          <p className="text-sm font-medium">{userData.user_full_name || "Not provided"}</p>
+          <p className="text-sm font-medium">
+            {userData.user_full_name || "Not provided"}
+          </p>
         </div>
         <div className="rounded-lg border border-border/70 bg-muted/40 p-3">
           <p className="text-xs text-muted-foreground">Phone</p>
-          <p className="text-sm font-medium">{userData.phone || "Not provided"}</p>
+          <p className="text-sm font-medium">
+            {userData.phone || "Not provided"}
+          </p>
         </div>
         <div className="rounded-lg border border-border/70 bg-muted/40 p-3">
           <p className="text-xs text-muted-foreground">Role Assigned</p>
-          <p className="text-sm">{renderListWithToggle(roles, showAllRoles, setShowAllRoles)}</p>
+          <p className="text-sm">
+            {renderListWithToggle(roles, showAllRoles, setShowAllRoles)}
+          </p>
         </div>
         <div className="rounded-lg border border-border/70 bg-muted/40 p-3">
           <p className="text-xs text-muted-foreground">Organization Mapped</p>
-          <p className="text-sm">{renderListWithToggle(organizations, showAllOrgs, setShowAllOrgs)}</p>
+          <p className="text-sm">
+            {renderListWithToggle(organizations, showAllOrgs, setShowAllOrgs)}
+          </p>
         </div>
       </div>
 
       {/* â”€â”€ Timezone â”€â”€ */}
-      <div className="hidden rounded-lg border border-border/70 bg-muted/30 p-3">
+      <div className="rounded-lg border border-border/70 bg-muted/30 p-3">
         <p className="text-sm font-medium mb-2">Timezone</p>
         <select
           value={selectedTimezone}
           onChange={(e) => {
             const tz = e.target.value;
             setSelectedTimezone(tz);
-            const encrypted = CryptoJS.AES.encrypt(JSON.stringify(tz), "").toString();
+            const encrypted = CryptoJS.AES.encrypt(
+              JSON.stringify(tz),
+              "",
+            ).toString();
             sessionStorage.setItem("selectedTimezone", encrypted);
             window.location.reload();
           }}
           className="w-full border px-2 py-1 rounded text-sm text-foreground bg-background"
         >
-          {[...new Map(timezonesList.map((tz) => [tz.TimeZone, tz])).values()].map((tz) => (
-            <option key={tz.TimeZone} value={tz.TimeZone}>{tz.TimeZone}</option>
+          {[
+            ...new Map(timezonesList.map((tz) => [tz.TimeZone, tz])).values(),
+          ].map((tz) => (
+            <option key={tz.TimeZone} value={tz.TimeZone}>
+              {tz.TimeZone}
+            </option>
           ))}
         </select>
       </div>
@@ -407,7 +484,11 @@ const ProfileDisplay = () => {
             <label className="text-xs text-muted-foreground">Theme Mode</label>
             <select
               value={themeMode}
-              onChange={(e) => { const v = e.target.value; setThemeMode(v); persistBranding({ themeMode: v }); }}
+              onChange={(e) => {
+                const v = e.target.value;
+                setThemeMode(v);
+                persistBranding({ themeMode: v });
+              }}
               className="border px-2 py-1 rounded text-sm text-foreground bg-background"
             >
               <option value="light">Light</option>
@@ -416,30 +497,54 @@ const ProfileDisplay = () => {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-muted-foreground">Theme Preset</label>
+            <label className="text-xs text-muted-foreground">
+              Theme Preset
+            </label>
             <select
               value={themePreset}
-              onChange={(e) => { const v = e.target.value; setThemePreset(v); persistBranding({ themePreset: v }); }}
+              onChange={(e) => {
+                const v = e.target.value;
+                setThemePreset(v);
+                persistBranding({ themePreset: v });
+              }}
               className="border px-2 py-1 rounded text-sm text-foreground bg-background"
             >
-              {THEME_PRESETS.map((p) => <option key={p} value={p}>{p}</option>)}
+              {THEME_PRESETS.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
             </select>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground">Primary Color</label>
+              <label className="text-xs text-muted-foreground">
+                Primary Color
+              </label>
               <input
-                type="color" value={primaryColor}
-                onChange={(e) => { const v = e.target.value; setPrimaryColor(v); persistBranding({ primaryColor: v }); }}
+                type="color"
+                value={primaryColor}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setPrimaryColor(v);
+                  persistBranding({ primaryColor: v });
+                }}
                 className="h-9 w-14 rounded border"
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-muted-foreground">Secondary Color</label>
+              <label className="text-xs text-muted-foreground">
+                Secondary Color
+              </label>
               <input
-                type="color" value={secondaryColor}
-                onChange={(e) => { const v = e.target.value; setSecondaryColor(v); persistBranding({ secondaryColor: v }); }}
+                type="color"
+                value={secondaryColor}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setSecondaryColor(v);
+                  persistBranding({ secondaryColor: v });
+                }}
                 className="h-9 w-14 rounded border"
               />
             </div>
@@ -449,12 +554,22 @@ const ProfileDisplay = () => {
             <label className="text-xs text-muted-foreground">Font</label>
             <select
               value={fontFamily}
-              onChange={(e) => { const v = e.target.value; setFontFamily(v); persistBranding({ fontFamily: v }); }}
+              onChange={(e) => {
+                const v = e.target.value;
+                setFontFamily(v);
+                persistBranding({ fontFamily: v });
+              }}
               className="border px-2 py-1 rounded text-sm text-foreground bg-background"
               style={{ fontFamily: `${fontFamily}, sans-serif` }}
             >
               {ALLOWED_FONTS.map((f) => (
-                <option key={f} value={f} style={{ fontFamily: `${f}, sans-serif` }}>{f}</option>
+                <option
+                  key={f}
+                  value={f}
+                  style={{ fontFamily: `${f}, sans-serif` }}
+                >
+                  {f}
+                </option>
               ))}
             </select>
           </div>

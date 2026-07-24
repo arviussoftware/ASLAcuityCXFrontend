@@ -359,20 +359,6 @@ export function DataTableToolbar({
           fileName = "Evaluation_Data";
           dataKey = "interactions"; // backend uses this key
           break;
-
-        case "AgentOrganization":
-          apiUrl = `/api/agentorganization`;
-          bodyData = {
-            page: 1,
-            perPage: 10000,
-            search: exportSearch,
-            queryType: 1,
-            currentUserId,
-            isActive: exportStatus,
-          };
-          fileName = "Agent_Organization_Data";
-          dataKey = "mappings";
-          break;
       }
 
       const response = await fetch(apiUrl, {
@@ -457,9 +443,7 @@ export function DataTableToolbar({
             </Skeleton>
           ) : (
             <>
-              {pageType !== "AgentOrganization" && (
-                <DataTableViewOptions table={table} />
-              )}
+              <DataTableViewOptions table={table} />
 
               {exportOptions.length > 1 && (
                 <select

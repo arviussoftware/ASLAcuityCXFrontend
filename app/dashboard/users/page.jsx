@@ -98,20 +98,13 @@ const formatUserColumnTitle = (key) =>
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
 const normalizeUserColumnOrder = (savedOrder, availableColumnIds = []) => {
-  const normalizedOrder = normalizeSavedColumnOrder(
-    savedOrder,
-    availableColumnIds,
-  );
+  // Only fall back to the static default order when nothing has been saved yet.
+  const baseOrder =
+    Array.isArray(savedOrder) && savedOrder.length
+      ? savedOrder
+      : USER_COLUMN_ORDER;
 
-  const orderedKnownColumns = USER_COLUMN_ORDER.filter((columnId) =>
-    normalizedOrder.includes(columnId),
-  );
-
-  const unknownColumns = normalizedOrder.filter(
-    (columnId) => !USER_COLUMN_ORDER.includes(columnId),
-  );
-
-  return [...orderedKnownColumns, ...unknownColumns];
+  return normalizeSavedColumnOrder(baseOrder, availableColumnIds);
 };
 
 const toCamelCase = (value) => {
@@ -1055,7 +1048,7 @@ const UsersPage = ({ searchParams, basePath = "/dashboard/users" }) => {
 
     // Single confirmation — warn about related data
     const confirmDelete = confirm(
-      "On deleting these users, all associated interactions and evaluations will also be permanently deleted.\n\nAre you absolutely sure you want to proceed?",
+      "On deleting these users, all associated interactions will also be deleted.\n\nAre you absolutely sure you want to proceed?",
     );
     if (!confirmDelete) return;
 

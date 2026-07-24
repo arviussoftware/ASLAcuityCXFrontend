@@ -13,8 +13,6 @@ import withAuth from "@/components/withAuth"; // Import the withAuth HOC
 import { getSelectedOrgIdsHeader } from "@/lib/client-org";
 import InteractionTypeDDL from "./InteractionTypeDDL";
 import dynamic from "next/dynamic";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.snow.css"; // Import styles
 
 //import Sidebar from "./Sidebar";
 //import { useLocation } from "react-router-dom";
@@ -1724,48 +1722,20 @@ const SaveDuplicateForm = ({
                                 >
                                   Header Instructions
                                 </label>
-                                {/* <textarea
-                              id="header-description"
-                              placeholder="Header Instructions"
-                              value={header.description}
-                              maxLength={2000}
-                              onChange={(e) =>
-                                setHeader({
-                                  ...header,
-                                  description: e.target.value,
-                                })
-                              }
-                              className="modal-element-textarea-field"
-                            /> */}
 
-                                <ReactQuill
+                                <textarea
                                   id="header-description"
                                   placeholder="Header Instructions"
                                   value={header.description}
                                   maxLength={250}
-                                  onChange={(value) =>
+                                  rows={3}
+                                  onChange={(e) =>
                                     setHeader({
                                       ...header,
-                                      description: value,
+                                      description: e.target.value,
                                     })
                                   }
-                                  modules={{
-                                    toolbar: [
-                                      ["bold", "italic", "underline"], // Formatting options
-                                      [{ list: "ordered" }, { list: "bullet" }], // Lists
-                                      // ["link", "image"], // Insert link and image
-                                      [{ align: [] }], // Text alignment
-                                      ["clean"], // Remove formatting
-                                    ],
-                                  }}
-                                  formats={[
-                                    "bold",
-                                    "italic",
-                                    "underline",
-                                    "list",
-                                    "bullet",
-                                    "align",
-                                  ]}
+                                  className="w-full p-2 border border-gray-300 rounded-md bg-white text-sm"
                                 />
                               </div>
                               {selectedFields.length > 0 && (
@@ -1958,47 +1928,19 @@ const SaveDuplicateForm = ({
                                       )
                                     }
                                   />
-                                  {/* <textarea
-                              placeholder="Category Instructions"
-                              value={section.sectionDescription}
-                              maxLength={2000}
-                              onChange={(event) =>
-                                handleSectionDescriptionChange(
-                                  sIndex,
-                                  event,
-                                  setSections
-                                )
-                              }
-                            /> */}
-
-                                  <ReactQuill
+                                  <textarea
                                     placeholder="Category Instructions"
                                     value={section.sectionDescription}
                                     maxLength={250}
-                                    onChange={(value) =>
+                                    rows={3}
+                                    onChange={(e) =>
                                       handleSectionDescriptionChange(
                                         sIndex,
-                                        value,
+                                        e.target.value,
                                         setSections
                                       )
                                     }
-                                    modules={{
-                                      toolbar: [
-                                        ["bold", "italic", "underline"], // Formatting options
-                                        [{ list: "ordered" }, { list: "bullet" }], // Lists
-                                        // ["link", "image"], // Insert link and image
-                                        [{ align: [] }], // Text alignment
-                                        ["clean"], // Remove formatting
-                                      ],
-                                    }}
-                                    formats={[
-                                      "bold",
-                                      "italic",
-                                      "underline",
-                                      "list",
-                                      "bullet",
-                                      "align",
-                                    ]}
+                                    className="w-full p-2 border border-gray-300 rounded-md bg-white text-sm"
                                   />
                                   <div className="div-container-calculator-wrapper">
                                     <div className="visibility-controls">
@@ -3062,34 +3004,19 @@ const SaveDuplicateForm = ({
                               className="modal-element-textarea-field"
                             /> */}
 
-                                <ReactQuill
+                                <textarea
                                   id="footer-description"
                                   placeholder="Footer Instructions"
                                   value={footer.description}
                                   maxLength={250}
-                                  onChange={(value) =>
+                                  rows={3}
+                                  onChange={(e) =>
                                     setFooter({
                                       ...footer,
-                                      description: value,
+                                      description: e.target.value,
                                     })
                                   }
-                                  modules={{
-                                    toolbar: [
-                                      ["bold", "italic", "underline"], // Formatting options
-                                      [{ list: "ordered" }, { list: "bullet" }], // Lists
-                                      // ["link", "image"], // Insert link and image
-                                      [{ align: [] }], // Text alignment
-                                      ["clean"], // Remove formatting
-                                    ],
-                                  }}
-                                  formats={[
-                                    "bold",
-                                    "italic",
-                                    "underline",
-                                    "list",
-                                    "bullet",
-                                    "align",
-                                  ]}
+                                  className="w-full p-2 border border-gray-300 rounded-md bg-white text-sm"
                                 />
                               </div>
 

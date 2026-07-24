@@ -5,6 +5,8 @@ import CryptoJS from "crypto-js";
 import { useRouter } from "next/navigation";
 import withAuth from "@/components/withAuth";
 import { notFound } from "next/navigation";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { HiMiniInformationCircle } from "react-icons/hi2";
 import "@/app/organization.css";
 import { getSelectedOrgIdsHeader } from "@/lib/client-org";
 
@@ -2464,6 +2466,7 @@ const Page = () => {
   const [showAssociationError, setShowAssociationError] = useState(false);
   const [associationErrorMsg, setAssociationErrorMsg] = useState("");
   const [hasUnmappedUsers, setHasUnmappedUsers] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const router = useRouter();
   const scrollRef = useRef(null);
@@ -3039,357 +3042,502 @@ const Page = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "calc(100vh - 88px)",
-        minHeight: 0,
-        overflow: "hidden",
-        background: "hsl(var(--background))",
-      }}
-    >
-      {/* ── TOP BAR */}
+    <>
       <div
         style={{
-          flexShrink: 0,
-          padding: "8px 16px",
-          borderBottom: "1px solid hsl(var(--border))",
-          background: "hsl(var(--card))",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-          <h1
-            style={{
-              fontSize: 11,
-              fontWeight: 700,
-              color: "hsl(var(--foreground))",
-              margin: 0,
-              letterSpacing: "0.5px",
-            }}
-          >
-            ORGANIZATION MANAGER
-          </h1>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              flexWrap: "wrap",
-            }}
-          >
-            {breadcrumb.map((crumb, idx) => (
-              <React.Fragment key={`${crumb.colIdx}-${idx}`}>
-                {idx > 0 && (
-                  <span
-                    style={{
-                      fontSize: 9,
-                      color: "hsl(var(--muted-foreground))",
-                      userSelect: "none",
-                    }}
-                  >
-                    ›
-                  </span>
-                )}
-                <button
-                  onClick={() =>
-                    handleBreadcrumbClick(crumb.colIdx, crumb.isRoot)
-                  }
-                  style={{
-                    fontSize: 9,
-                    fontWeight: 600,
-                    color:
-                      idx === breadcrumb.length - 1
-                        ? "var(--brand-primary)"
-                        : "hsl(var(--muted-foreground))",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: "1px 3px",
-                    borderRadius: 3,
-                    transition: "color 0.12s, background 0.12s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "hsl(var(--accent))";
-                    e.currentTarget.style.color = "var(--brand-primary)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "none";
-                    e.currentTarget.style.color =
-                      idx === breadcrumb.length - 1
-                        ? "var(--brand-primary)"
-                        : "hsl(var(--muted-foreground))";
-                  }}
-                >
-                  {crumb.label}
-                </button>
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 4,
-              fontSize: 10,
-              color: "hsl(var(--muted-foreground))",
-            }}
-          >
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "#22C55E",
-                display: "inline-block",
-              }}
-            />
-            Active{" "}
-            <strong style={{ color: "hsl(var(--foreground))" }}>
-              {orgCounts?.Active ?? 0}
-            </strong>
-          </span>
-          <span
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 4,
-              fontSize: 10,
-              color: "hsl(var(--muted-foreground))",
-            }}
-          >
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "#EF4444",
-                display: "inline-block",
-              }}
-            />
-            Inactive{" "}
-            <strong style={{ color: "hsl(var(--foreground))" }}>
-              {orgCounts?.Inactive ?? 0}
-            </strong>
-          </span>
-          <button
-            onClick={() => {
-              setColumns(
-                treeData ? [[treeData, ...(treeData.children || [])]] : [],
-              );
-              setSelectedPath([]);
-              setSqueezedCols(new Set());
-              closePanel();
-            }}
-            style={{
-              padding: "4px 10px",
-              fontSize: 10,
-              fontWeight: 600,
-              color: "hsl(var(--foreground))",
-              background: "hsl(var(--muted))",
-              border: "1px solid hsl(var(--border))",
-              borderRadius: 5,
-              cursor: "pointer",
-            }}
-          >
-            Collapse All
-          </button>
-        </div>
-      </div>
-
-      {/* ── COLUMNS AREA */}
-      <div
-        style={{
-          flex: 1,
-          overflow: "hidden",
           display: "flex",
           flexDirection: "column",
+          height: "calc(100vh - 88px)",
+          minHeight: 0,
+          overflow: "hidden",
+          background: "hsl(var(--background))",
         }}
       >
-        <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
-          <div
-            ref={scrollRef}
-            style={{
-              flex: 1,
-              display: "flex",
-              gap: 8,
-              padding: 10,
-              overflowX: "auto",
-              overflowY: "hidden",
-              alignItems: "flex-start",
-            }}
-          >
-            {columns.map((colNodes, colIdx) => {
-              const isFirst = colIdx === 0;
-              const isSqueezeable = !isFirst;
-              const isSqueezed = squeezedCols.has(colIdx);
-              return (
-                <OrgColumn
-                  key={colIdx}
-                  nodes={colNodes}
-                  selectedNodeId={selectedPath[colIdx]}
-                  onActionClick={handleActionClick}
-                  onUsersClick={handleUsersClick}
-                  onArrowClick={handleArrowClick}
-                  onMapUsersClick={handleMapUsersClick}
-                  onAddUsersClick={handleAddUsersClick}
-                  showAddUsersAction={hasUnmappedUsers}
-                  privilegeId={privilegeId}
-                  isFirstColumn={isFirst}
-                  isSqueezeable={isSqueezeable}
-                  isSqueezing={isSqueezed}
-                  onUnsqueeze={() => handleUnsqueeze(colIdx)}
-                />
-              );
-            })}
-          </div>
-
-          <RightPanel
-            content={
-              rightPanel?.type === "action" && actionNode ? (
-                <ActionPanelContent
-                  node={actionNode}
-                  mode={mode}
-                  setMode={setMode}
-                  newChildName={newChildName}
-                  setNewChildName={setNewChildName}
-                  newChildDesc={newChildDesc}
-                  setNewChildDesc={setNewChildDesc}
-                  onSave={addChild}
-                  onEdit={editChild}
-                  onDelete={deleteNode}
-                  onActivate={() => toggleActivation(true)}
-                  onDeactivate={() => toggleActivation(false)}
-                  onCancel={closePanel}
-                  privilegeId={privilegeId}
-                />
-              ) : rightPanel?.type === "users" ? (
-                <UsersPanelContent
-                  users={rightPanel.users}
-                  onClose={closePanel}
-                  orgPath={rightPanel.orgPath}
-                  node={rightPanel.node}
-                  onSelectUser={(u) =>
-                    setRightPanel({
-                      ...rightPanel,
-                      type: "profile",
-                      selectedUser: u,
-                    })
-                  }
-                  userSearch={userSearch}
-                  setUserSearch={setUserSearch}
-                  onDeassociateSuccess={handleDeassociateSuccess}
-                />
-              ) : rightPanel?.type === "profile" ? (
-                <UserProfileContent
-                  user={rightPanel.selectedUser}
-                  onBack={() => setRightPanel({ ...rightPanel, type: "users" })}
-                  onClose={closePanel}
-                />
-              ) : rightPanel?.type === "mapUsers" ? (
-                <MapUsersPanelContent
-                  node={rightPanel.node}
-                  onClose={closePanel}
-                  onSaveMapping={handleSaveMapping}
-                />
-              ) : rightPanel?.type === "addUsers" ? (
-                <AddUsersPanelContent
-                  node={rightPanel.node}
-                  onClose={closePanel}
-                  onAssociateUsers={handleAssociateExistingUsers}
-                />
-              ) : null
-            }
-            onClose={closePanel}
-          />
-        </div>
-      </div>
-
-      {/* ── ASSOCIATION ERROR MODAL */}
-      {showAssociationError && (
+        {/* ── TOP BAR */}
         <div
           style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.5)",
+            flexShrink: 0,
+            padding: "8px 16px",
+            borderBottom: "1px solid hsl(var(--border))",
+            background: "hsl(var(--card))",
             display: "flex",
-            justifyContent: "center",
             alignItems: "center",
-            zIndex: 1000,
+            justifyContent: "space-between",
           }}
         >
-          <div
-            style={{
-              background: "hsl(var(--card))",
-              padding: 20,
-              borderRadius: 10,
-              textAlign: "center",
-              maxWidth: 380,
-              width: "90%",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
-            }}
-          >
-            <p
+          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <h1
               style={{
-                marginBottom: 16,
-                fontSize: 12,
+                fontSize: 11,
+                fontWeight: 700,
                 color: "hsl(var(--foreground))",
+                margin: 0,
+                letterSpacing: "0.5px",
               }}
             >
-              {associationErrorMsg ||
-                "This organization or its children may be associated with users. Please de-associate them first."}
-            </p>
-            <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
-              <button
-                onClick={() => setShowAssociationError(false)}
-                style={{
-                  padding: "7px 16px",
-                  background: "hsl(var(--muted))",
-                  border: "none",
-                  borderRadius: 6,
-                  cursor: "pointer",
-                  fontSize: 11,
-                  fontWeight: 600,
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  setShowAssociationError(false);
-                  router.push("/dashboard/users");
-                }}
-                style={{
-                  padding: "7px 16px",
-                  background: "var(--brand-primary)",
-                  color: "hsl(var(--card))",
-                  border: "none",
-                  borderRadius: 6,
-                  cursor: "pointer",
-                  fontSize: 11,
-                  fontWeight: 600,
-                }}
-              >
-                Go to Users Page
-              </button>
+              ORGANIZATION MANAGER
+            </h1>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                flexWrap: "wrap",
+              }}
+            >
+              {breadcrumb.map((crumb, idx) => (
+                <React.Fragment key={`${crumb.colIdx}-${idx}`}>
+                  {idx > 0 && (
+                    <span
+                      style={{
+                        fontSize: 9,
+                        color: "hsl(var(--muted-foreground))",
+                        userSelect: "none",
+                      }}
+                    >
+                      ›
+                    </span>
+                  )}
+                  <button
+                    onClick={() =>
+                      handleBreadcrumbClick(crumb.colIdx, crumb.isRoot)
+                    }
+                    style={{
+                      fontSize: 9,
+                      fontWeight: 600,
+                      color:
+                        idx === breadcrumb.length - 1
+                          ? "var(--brand-primary)"
+                          : "hsl(var(--muted-foreground))",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: "1px 3px",
+                      borderRadius: 3,
+                      transition: "color 0.12s, background 0.12s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "hsl(var(--accent))";
+                      e.currentTarget.style.color = "var(--brand-primary)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "none";
+                      e.currentTarget.style.color =
+                        idx === breadcrumb.length - 1
+                          ? "var(--brand-primary)"
+                          : "hsl(var(--muted-foreground))";
+                    }}
+                  >
+                    {crumb.label}
+                  </button>
+                </React.Fragment>
+              ))}
             </div>
           </div>
-        </div>
-      )}
 
-      <style>{`
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                fontSize: 10,
+                color: "hsl(var(--muted-foreground))",
+              }}
+            >
+              <span
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background: "#22C55E",
+                  display: "inline-block",
+                }}
+              />
+              Active{" "}
+              <strong style={{ color: "hsl(var(--foreground))" }}>
+                {orgCounts?.Active ?? 0}
+              </strong>
+            </span>
+            <span
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+                fontSize: 10,
+                color: "hsl(var(--muted-foreground))",
+              }}
+            >
+              <span
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background: "#EF4444",
+                  display: "inline-block",
+                }}
+              />
+              Inactive{" "}
+              <strong style={{ color: "hsl(var(--foreground))" }}>
+                {orgCounts?.Inactive ?? 0}
+              </strong>
+            </span>
+            <button
+              onClick={() => {
+                setColumns(
+                  treeData ? [[treeData, ...(treeData.children || [])]] : [],
+                );
+                setSelectedPath([]);
+                setSqueezedCols(new Set());
+                closePanel();
+              }}
+              style={{
+                padding: "4px 10px",
+                fontSize: 10,
+                fontWeight: 600,
+                color: "hsl(var(--foreground))",
+                background: "hsl(var(--muted))",
+                border: "1px solid hsl(var(--border))",
+                borderRadius: 5,
+                cursor: "pointer",
+              }}
+            >
+              Collapse All
+            </button>
+
+            <button
+              onClick={() => setHelpOpen(true)}
+              title="Information"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+              }}
+            >
+              <HiMiniInformationCircle
+                style={{ width: 26, height: 26, color: "#3B82F6" }}
+              />
+            </button>
+          </div>
+        </div>
+
+        {/* ── COLUMNS AREA */}
+        <div
+          style={{
+            flex: 1,
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
+            <div
+              ref={scrollRef}
+              style={{
+                flex: 1,
+                display: "flex",
+                gap: 8,
+                padding: 10,
+                overflowX: "auto",
+                overflowY: "hidden",
+                alignItems: "flex-start",
+              }}
+            >
+              {columns.map((colNodes, colIdx) => {
+                const isFirst = colIdx === 0;
+                const isSqueezeable = !isFirst;
+                const isSqueezed = squeezedCols.has(colIdx);
+                return (
+                  <OrgColumn
+                    key={colIdx}
+                    nodes={colNodes}
+                    selectedNodeId={selectedPath[colIdx]}
+                    onActionClick={handleActionClick}
+                    onUsersClick={handleUsersClick}
+                    onArrowClick={handleArrowClick}
+                    onMapUsersClick={handleMapUsersClick}
+                    onAddUsersClick={handleAddUsersClick}
+                    showAddUsersAction={hasUnmappedUsers}
+                    privilegeId={privilegeId}
+                    isFirstColumn={isFirst}
+                    isSqueezeable={isSqueezeable}
+                    isSqueezing={isSqueezed}
+                    onUnsqueeze={() => handleUnsqueeze(colIdx)}
+                  />
+                );
+              })}
+            </div>
+
+            <RightPanel
+              content={
+                rightPanel?.type === "action" && actionNode ? (
+                  <ActionPanelContent
+                    node={actionNode}
+                    mode={mode}
+                    setMode={setMode}
+                    newChildName={newChildName}
+                    setNewChildName={setNewChildName}
+                    newChildDesc={newChildDesc}
+                    setNewChildDesc={setNewChildDesc}
+                    onSave={addChild}
+                    onEdit={editChild}
+                    onDelete={deleteNode}
+                    onActivate={() => toggleActivation(true)}
+                    onDeactivate={() => toggleActivation(false)}
+                    onCancel={closePanel}
+                    privilegeId={privilegeId}
+                  />
+                ) : rightPanel?.type === "users" ? (
+                  <UsersPanelContent
+                    users={rightPanel.users}
+                    onClose={closePanel}
+                    orgPath={rightPanel.orgPath}
+                    node={rightPanel.node}
+                    onSelectUser={(u) =>
+                      setRightPanel({
+                        ...rightPanel,
+                        type: "profile",
+                        selectedUser: u,
+                      })
+                    }
+                    userSearch={userSearch}
+                    setUserSearch={setUserSearch}
+                    onDeassociateSuccess={handleDeassociateSuccess}
+                  />
+                ) : rightPanel?.type === "profile" ? (
+                  <UserProfileContent
+                    user={rightPanel.selectedUser}
+                    onBack={() =>
+                      setRightPanel({ ...rightPanel, type: "users" })
+                    }
+                    onClose={closePanel}
+                  />
+                ) : rightPanel?.type === "mapUsers" ? (
+                  <MapUsersPanelContent
+                    node={rightPanel.node}
+                    onClose={closePanel}
+                    onSaveMapping={handleSaveMapping}
+                  />
+                ) : rightPanel?.type === "addUsers" ? (
+                  <AddUsersPanelContent
+                    node={rightPanel.node}
+                    onClose={closePanel}
+                    onAssociateUsers={handleAssociateExistingUsers}
+                  />
+                ) : null
+              }
+              onClose={closePanel}
+            />
+          </div>
+        </div>
+
+        {/* ── ASSOCIATION ERROR MODAL */}
+        {showAssociationError && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1000,
+            }}
+          >
+            <div
+              style={{
+                background: "hsl(var(--card))",
+                padding: 20,
+                borderRadius: 10,
+                textAlign: "center",
+                maxWidth: 380,
+                width: "90%",
+                boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+              }}
+            >
+              <p
+                style={{
+                  marginBottom: 16,
+                  fontSize: 12,
+                  color: "hsl(var(--foreground))",
+                }}
+              >
+                {associationErrorMsg ||
+                  "This organization or its children may be associated with users. Please de-associate them first."}
+              </p>
+              <div
+                style={{ display: "flex", justifyContent: "center", gap: 8 }}
+              >
+                <button
+                  onClick={() => setShowAssociationError(false)}
+                  style={{
+                    padding: "7px 16px",
+                    background: "hsl(var(--muted))",
+                    border: "none",
+                    borderRadius: 6,
+                    cursor: "pointer",
+                    fontSize: 11,
+                    fontWeight: 600,
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setShowAssociationError(false);
+                    router.push("/dashboard/users");
+                  }}
+                  style={{
+                    padding: "7px 16px",
+                    background: "var(--brand-primary)",
+                    color: "hsl(var(--card))",
+                    border: "none",
+                    borderRadius: 6,
+                    cursor: "pointer",
+                    fontSize: 11,
+                    fontWeight: 600,
+                  }}
+                >
+                  Go to Users Page
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <style>{`
         @keyframes slideIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
         ::-webkit-scrollbar { width:4px; height:4px; }
         ::-webkit-scrollbar-track { background:hsl(var(--muted)); border-radius:10px; }
         ::-webkit-scrollbar-thumb { background:hsl(var(--border)); border-radius:10px; }
       `}</style>
-    </div>
+      </div>
+      {/* ── HELP / INFO MODAL ── */}
+      <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
+        <DialogContent
+          className="max-w-lg max-h-[80vh] overflow-y-auto"
+          aria-describedby={undefined}
+        >
+          <DialogTitle className="text-sm font-semibold">
+            Organization Manager — How it works
+          </DialogTitle>
+
+          <div className="text-xs text-muted-foreground space-y-4 mt-2 leading-relaxed">
+            <div>
+              <p className="text-gray-700 font-semibold text-[11px] uppercase tracking-wide mb-1">
+                Organization Tree
+              </p>
+              <p>
+                Organizations are shown as <strong>columns</strong>, starting
+                from the <strong>Root</strong>. Click the arrow icon on any node
+                with children to drill into it — a new column opens to its
+                right. Use the <strong>breadcrumb</strong> at the top to jump
+                back to any level, or <strong>&quot;Collapse All&quot;</strong>{" "}
+                to reset the view to the root.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-700 font-semibold text-[11px] uppercase tracking-wide mb-1">
+                ⚙️ Node Actions
+              </p>
+              <p>
+                Click the <strong>gear icon</strong> on a node to open its
+                action panel. From there you can:
+              </p>
+              <ul className="mt-1.5 space-y-1 pl-3 list-disc">
+                <li>
+                  <strong>Create Child Node</strong> — add a new organization
+                  under the selected one (max 20 characters, letters/numbers
+                  only).
+                </li>
+                <li>
+                  <strong>Edit</strong> — update the name or description.
+                </li>
+                <li>
+                  <strong>Activate / Deactivate</strong> — deactivating a parent
+                  also disables all of its children.
+                </li>
+                <li>
+                  <strong>Delete</strong> — permanently removes the
+                  organization.
+                </li>
+              </ul>
+              <p className="mt-1.5">
+                These options only appear if you&apos;ve been granted the
+                corresponding privilege.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-700 font-semibold text-[11px] uppercase tracking-wide mb-1">
+                👤 Viewing Users
+              </p>
+              <p>
+                Click the <strong>user icon</strong> on a node to see everyone
+                mapped to that organization, grouped by role. Click any user to
+                open their full profile, or use the search bar to filter by
+                name, login ID, or role.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-700 font-semibold text-[11px] uppercase tracking-wide mb-1">
+                🔗 Mapping &amp; Assigning Users
+              </p>
+              <p>
+                Use <strong>Map Users</strong> to link existing users to an
+                organization. If a user isn&apos;t assigned to{" "}
+                <strong>any</strong> organization yet, they&apos;ll show up
+                under the green{" "}
+                <strong>&quot;Assign Unmapped Users&quot;</strong> icon, letting
+                you associate them directly.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-700 font-semibold text-[11px] uppercase tracking-wide mb-1">
+                🚫 De-associating Users
+              </p>
+              <p>
+                Inside the Users panel, click{" "}
+                <strong>&quot;De-associate&quot;</strong> to enter selection
+                mode, choose one or more users, and remove them from the
+                organization in bulk.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-700 font-semibold text-[11px] uppercase tracking-wide mb-1">
+                🗑️ Deleting an Organization
+              </p>
+              <p>
+                An organization can only be deleted if it has{" "}
+                <strong>no users or child organizations</strong> associated with
+                it. If it does, you&apos;ll be prompted to de-associate them
+                first from the Users page.
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-700 font-semibold text-[11px] uppercase tracking-wide mb-1">
+                🟢 🔴 Status Indicators
+              </p>
+              <p>
+                The colored dot on each node shows whether it&apos;s{" "}
+                <strong>Active</strong> or <strong>Inactive</strong>. The counts
+                in the top-right of the page reflect totals across the whole
+                organization tree.
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

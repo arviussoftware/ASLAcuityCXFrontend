@@ -11,8 +11,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import FormNavbar from "./FormNavbar";
 import withAuth from "@/components/withAuth"; // Import the withAuth HOC
 import dynamic from "next/dynamic";
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
-import "react-quill/dist/quill.snow.css";
 
 import {
   handleAddSection,
@@ -1866,34 +1864,19 @@ const SaveDraftForm = ({
                                 >
                                   Header Instructions
                                 </label>
-                                <ReactQuill
+                                <textarea
                                   id="header-description"
                                   placeholder="Header Instructions"
                                   value={header.description}
                                   maxLength={250}
-                                  onChange={(value) =>
+                                  rows={3}
+                                  onChange={(e) =>
                                     setHeader({
                                       ...header,
-                                      description: value,
+                                      description: e.target.value,
                                     })
                                   }
-                                  modules={{
-                                    toolbar: [
-                                      ["bold", "italic", "underline"], // Formatting options
-                                      [{ list: "ordered" }, { list: "bullet" }], // Lists
-                                      // ["link", "image"], // Insert link and image
-                                      [{ align: [] }], // Text alignment
-                                      ["clean"], // Remove formatting
-                                    ],
-                                  }}
-                                  formats={[
-                                    "bold",
-                                    "italic",
-                                    "underline",
-                                    "list",
-                                    "bullet",
-                                    "align",
-                                  ]}
+                                  className="w-full p-2 border border-gray-300 rounded-md bg-white text-sm"
                                 />
                               </div>
                               {selectedFields.length > 0 && (
@@ -2090,35 +2073,20 @@ const SaveDraftForm = ({
                                       )
                                     }
                                   />
-                                  <ReactQuill
-                                    placeholder="Category Instructions"
-                                    value={section.sectionDescription}
-                                    maxLength={250}
-                                    onChange={(value) =>
-                                      handleSectionDescriptionChange(
-                                        sIndex,
-                                        value,
-                                        setSections
-                                      )
-                                    }
-                                    modules={{
-                                      toolbar: [
-                                        ["bold", "italic", "underline"], // Formatting options
-                                        [{ list: "ordered" }, { list: "bullet" }], // Lists
-                                        // ["link", "image"], // Insert link and image
-                                        [{ align: [] }], // Text alignment
-                                        ["clean"], // Remove formatting
-                                      ],
-                                    }}
-                                    formats={[
-                                      "bold",
-                                      "italic",
-                                      "underline",
-                                      "list",
-                                      "bullet",
-                                      "align",
-                                    ]}
-                                  />
+                                   <textarea
+                                     placeholder="Category Instructions"
+                                     value={section.sectionDescription}
+                                     maxLength={250}
+                                     rows={3}
+                                     onChange={(e) =>
+                                       handleSectionDescriptionChange(
+                                         sIndex,
+                                         e.target.value,
+                                         setSections
+                                       )
+                                     }
+                                     className="w-full p-2 border border-gray-300 rounded-md bg-white text-sm"
+                                   />
                                   <div className="div-container-calculator-wrapper">
                                     <div className="visibility-controls">
                                       <label className="toggle-switch">
@@ -3186,34 +3154,19 @@ const SaveDraftForm = ({
                               className="modal-element-textarea-field"
                             /> */}
 
-                                <ReactQuill
+                                <textarea
                                   id="footer-description"
                                   placeholder="Footer Instructions"
                                   value={footer.description}
                                   maxLength={250}
-                                  onChange={(value) =>
+                                  rows={3}
+                                  onChange={(e) =>
                                     setFooter({
                                       ...footer,
-                                      description: value,
+                                      description: e.target.value,
                                     })
                                   }
-                                  modules={{
-                                    toolbar: [
-                                      ["bold", "italic", "underline"], // Formatting options
-                                      [{ list: "ordered" }, { list: "bullet" }], // Lists
-                                      // ["link", "image"], // Insert link and image
-                                      [{ align: [] }], // Text alignment
-                                      ["clean"], // Remove formatting
-                                    ],
-                                  }}
-                                  formats={[
-                                    "bold",
-                                    "italic",
-                                    "underline",
-                                    "list",
-                                    "bullet",
-                                    "align",
-                                  ]}
+                                  className="w-full p-2 border border-gray-300 rounded-md bg-white text-sm"
                                 />
                               </div>
 
